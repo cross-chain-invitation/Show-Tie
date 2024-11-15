@@ -11,8 +11,13 @@ contract DeployToFuji is Script {
 
         // Showtieコントラクトのデプロイ
         Showtie showtie = new Showtie(
-            address(1), 0xF694E193200268f9a4868e4Aa017A0118C9a8177, 0x0b9d5D9136855f6FEc3c0993feE6E9CE8a297846,
-            14767482510784806043,0x0,0x0,0x0
+            address(1),
+            0xF694E193200268f9a4868e4Aa017A0118C9a8177,
+            0x0b9d5D9136855f6FEc3c0993feE6E9CE8a297846,
+            14767482510784806043,
+            0x0,
+            0x0,
+            0x0
         );
 
         // デプロイされたコントラクトアドレスをコンソールに出力

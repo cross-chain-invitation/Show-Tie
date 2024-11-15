@@ -20,8 +20,6 @@ contract DeployToBase is Script {
             0x425
         );
 
-
-
         // デプロイされたコントラクトアドレスをコンソールに出力
         console.log("Showtie deployed at:", address(showtie));
 
@@ -43,12 +41,7 @@ contract callCCIP is Script {
         address targetContract = 0x900E61f9CF646453aa208e423372B87FA0C53846;
 
         // 関数を実行
-        showtie.createInvitation(
-            destinationChainSelector,
-            targetContract,
-            1,
-            bytes("")
-        );
+        showtie.createInvitation(destinationChainSelector, targetContract, 1, bytes(""));
 
         // デプロイの終了
         vm.stopBroadcast();

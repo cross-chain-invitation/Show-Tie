@@ -11,8 +11,13 @@ contract DeployToSepolia is Script {
 
         // Showtieコントラクトのデプロイ
         Showtie showtie = new Showtie(
-            address(1), 0x0BF3dE8c5D3e8A2B34D2BEeB17ABfCeBaf363A59, 0x779877A7B0D9E8603169DdbD7836e478b4624789,
-            16015286601757825753, 0x2ed,0x0,0x0
+            address(1),
+            0x0BF3dE8c5D3e8A2B34D2BEeB17ABfCeBaf363A59,
+            0x779877A7B0D9E8603169DdbD7836e478b4624789,
+            16015286601757825753,
+            0x2ed,
+            0x0,
+            0x0
         );
 
         // デプロイされたコントラクトアドレスをコンソールに出力
@@ -31,10 +36,11 @@ contract callCCIP is Script {
         Showtie showtie = Showtie(showtieAddress);
 
         // createInvitation関数の引数を設定
-        uint64 destinationChainSelector = 10344971235874465080;  //Base
+        uint64 destinationChainSelector = 10344971235874465080; //Base
         address targetContract = 0x582BeC27D96Ada0e958048208DD2953a6B642C6e; // Base Contract
         uint256 dappsId = 1;
-        bytes memory signature = hex"7c86662e830fb67caa9de159bba5a0000ecb42092f7551f434879cdf26bb86db70d3946847ea5a5a67e0b7c63b60b5c34b73b0ac4c2f54984f0156dfbd0f0c9a1c";
+        bytes memory signature =
+            hex"7c86662e830fb67caa9de159bba5a0000ecb42092f7551f434879cdf26bb86db70d3946847ea5a5a67e0b7c63b60b5c34b73b0ac4c2f54984f0156dfbd0f0c9a1c";
 
         // 関数を実行
         showtie.createInvitation(destinationChainSelector, targetContract, dappsId, signature);
