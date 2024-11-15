@@ -4,12 +4,15 @@ import {OwnerIsCreator} from "@chainlink/contracts-ccip/src/v0.8/shared/access/O
 import {Client} from "@chainlink/contracts-ccip/src/v0.8/ccip/libraries/Client.sol";
 import {IRouterClient} from "@chainlink/contracts-ccip/src/v0.8/ccip/interfaces/IRouterClient.sol";
 import {LinkTokenInterface} from "@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol";
+import {CCIPReceiver} from "@chainlink/contracts-ccip/src/v0.8/ccip/applications/CCIPReceiver.sol";
 
-contract Showtie is OwnerIsCreator {
+contract Showtie is OwnerIsCreator, CCIPReceiver {
     address public signProtocolContract;
     address public ccipContract;
 
     IRouterClient private s_router;
+
+    string private s_lastReceivedText; // Store the last received text.
 
     LinkTokenInterface private s_linkToken;
 
@@ -26,9 +29,15 @@ contract Showtie is OwnerIsCreator {
         address feeToken, // the token address used to pay CCIP fees.
         uint256 fees // The fees paid for sending the CCIP message.
     );
+    event MessageReceived(
+        bytes32 indexed messageId, // The unique ID of the message.
+        uint64 indexed sourceChainSelector, // The chain selector of the source chain.
+        address sender, // The address of the sender from the source chain.
+        string text // The text that was received.
+    );
     error NotEnoughBalance(uint256 currentBalance, uint256 calculatedFees);
 
-    constructor(address _signProtocolContract, address _router, address _link) {
+    constructor(address _signProtocolContract, address _router, address _link)CCIPReceiver(_router) {
         signProtocolContract = _signProtocolContract;
         s_router = IRouterClient(_router);
         s_linkToken = LinkTokenInterface(_link);
@@ -79,11 +88,17 @@ contract Showtie is OwnerIsCreator {
         return messageId;
     }
 
-    function receiveCrossChainMessage() external {
-        // TODO : Verify the inviter's signature
-        // TODO : Create a cross-chain attestation
-        // TODO : Store the cross-chain attestation ID
-        // TODO : Emit event
+    function _ccipReceive(
+        Client.Any2EVMMessage memory any2EvmMessage
+    ) internal override {
+         s_lastReceivedText= abi.decode(any2EvmMessage.data, (string)); // abi-decoding of the sent text
+
+        emit MessageReceived(
+            any2EvmMessage.messageId,
+            any2EvmMessage.sourceChainSelector, // fetch the source chain identifier (aka selector)
+            abi.decode(any2EvmMessage.sender, (address)), // abi-decoding of the sender address,
+            abi.decode(any2EvmMessage.data, (string))
+        );
     }
 
     function approveInvitation(bytes memory captchaSignature) external {
