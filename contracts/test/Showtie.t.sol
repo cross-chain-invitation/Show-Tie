@@ -1,278 +1,91 @@
-// // SPDX-License-Identifier: MIT
-// pragma solidity ^0.8.28;
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.19;
 
-// import "forge-std/Test.sol";
-// import "../src/Showtie.sol";
-// import {Client} from "@chainlink/contracts-ccip/src/v0.8/ccip/libraries/Client.sol";
-// import {CCIPReceiver} from "@chainlink/contracts-ccip/src/v0.8/ccip/applications/CCIPReceiver.sol";
+import "forge-std/Test.sol"; // FoundryのTestライブラリ
+import "solady/utils/ECDSA.sol";
+import "../src/Showtie.sol";
+import "forge-std/console.sol";
 
-// // Mock RouterClient
-// contract MockRouterClient is IRouterClient {
-//     uint256 public fee;
-//     bytes32 public lastMessageId;
-//     Client.EVM2AnyMessage public lastSentMessage;
+contract VerifyECDSASignatureTest is Test {
+    using ECDSA for bytes32;
+    Showtie public showtie;
+    address private signer;
+    uint256 privateKey =
+        0x1010101010101010101010101010101010101010101010101010101010101010;
 
-//     mapping(uint64 => bool) public supportedChains;
+    function setup() public {
+        showtie = new Showtie(address(1), address(0), address(0));
+        signer = vm.addr(privateKey); // 秘密鍵に対応するアドレスを生成
+    }
 
-//     function setFee(uint256 _fee) external {
-//         fee = _fee;
-//     }
+    function testVerifyV1andV2() public view {
+        string memory message = "attack at dawn";
 
-//     function getFee(
-//         uint64 /*destinationChainSelector*/,
-//         Client.EVM2AnyMessage memory /*message*/
-//     ) external view override returns (uint256) {
-//         return fee;
-//     }
+        bytes32 msgHash = keccak256(abi.encode(message))
+            .toEthSignedMessageHash();
 
-//     function ccipSend(
-//         uint64 /*destinationChainSelector*/,
-//         Client.EVM2AnyMessage memory message
-//     ) external payable override returns (bytes32) {
-//         lastSentMessage = message;
-//         lastMessageId = keccak256(
-//             abi.encodePacked(block.timestamp, message.receiver, message.data)
-//         );
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(privateKey, msgHash);
 
-//         // メッセージ受信をシミュレート
-//         address receiverAddress = abi.decode(message.receiver, (address));
-//         Client.Any2EVMMessage memory any2EvmMessage = Client.Any2EVMMessage({
-//             messageId: lastMessageId,
-//             sourceChainSelector: uint64(block.chainid),
-//             sender: abi.encode(msg.sender),
-//             data: message.data,
-//             destTokenAmounts: new Client.EVMTokenAmount[](0)
-//         });
+        bytes memory signature = abi.encodePacked(r, s, v);
+        assertEq(signature.length, 65);
 
-//         // 受信コントラクトのccipReceiveを呼び出す
-//         CCIPReceiver(receiverAddress).ccipReceive(any2EvmMessage);
+        console.logBytes(signature);
+        showtie.verifyV2(vm.addr(privateKey), message, signature);
+    }
 
-//         return lastMessageId;
-//     }
+    // function testVerifyECDSASignatureV1() public view {
+    //     // テストメッセージ
+    //     string memory message = "Hello, Solady!";
+    //     bytes32 messageHash = keccak256(abi.encodePacked(message));
 
-//     function isChainSupported(
-//         uint64 destChainSelector
-//     ) external view override returns (bool supported) {
-//         return supportedChains[destChainSelector];
-//     }
-// }
+    //     // Ethereum署名メッセージハッシュを計算
+    //     bytes32 ethSignedMessageHash = messageHash.toEthSignedMessageHash();
 
-// // Mock LinkToken
-// contract MockLinkToken is LinkTokenInterface {
-//     mapping(address => uint256) public balances;
-//     mapping(address => mapping(address => uint256)) public allowances;
+    //     // メッセージの署名を生成
+    //     (uint8 v, bytes32 r, bytes32 s) = vm.sign(
+    //         privateKey,
+    //         ethSignedMessageHash
+    //     );
+    //     bytes memory signature = abi.encodePacked(r, s, v);
 
-//     function balanceOf(
-//         address owner
-//     ) external view override returns (uint256 balance) {
-//         return balances[owner];
-//     }
+    //     // 復元したアドレスを確認
+    //     address recoveredSigner = ethSignedMessageHash.recover(signature);
+    //     assertEq(
+    //         recoveredSigner,
+    //         signer,
+    //         "Recovered signer does not match the expected signer"
+    //     );
 
-//     function transfer(
-//         address to,
-//         uint256 value
-//     ) external override returns (bool success) {
-//         require(balances[msg.sender] >= value, "Not enough balance");
-//         balances[msg.sender] -= value;
-//         balances[to] += value;
-//         return true;
-//     }
+    //     // 署名の検証
+    //     bool isValid = showtie.verifyECDSASignature(
+    //         signer,
+    //         messageHash,
+    //         signature
+    //     );
+    //     assertTrue(isValid, "Signature verification failed");
+    // }
 
-//     function approve(
-//         address spender,
-//         uint256 value
-//     ) external override returns (bool success) {
-//         allowances[msg.sender][spender] = value;
-//         return true;
-//     }
-
-//     function transferFrom(
-//         address from,
-//         address to,
-//         uint256 value
-//     ) external override returns (bool success) {
-//         require(balances[from] >= value, "Not enough balance");
-//         require(allowances[from][msg.sender] >= value, "Not enough allowance");
-//         balances[from] -= value;
-//         allowances[from][msg.sender] -= value;
-//         balances[to] += value;
-//         return true;
-//     }
-
-//     function allowance(
-//         address owner,
-//         address spender
-//     ) external view override returns (uint256 remaining) {
-//         return allowances[owner][spender];
-//     }
-
-//     function totalSupply() external view override returns (uint256 supply) {
-//         return 0; // 実装簡略化のため
-//     }
-
-//     function name() external view override returns (string memory) {
-//         return "Mock LINK";
-//     }
-
-//     function symbol() external view override returns (string memory) {
-//         return "mLINK";
-//     }
-
-//     function decimals() external view override returns (uint8) {
-//         return 18;
-//     }
-
-//     // テスト用のトークン発行関数
-//     function mint(address to, uint256 amount) external {
-//         balances[to] += amount;
-//     }
-
-//     // decreaseApproval の実装
-//     function decreaseApproval(
-//         address spender,
-//         uint256 subtractedValue
-//     ) external override returns (bool success) {
-//         uint256 currentAllowance = allowances[msg.sender][spender];
-//         if (subtractedValue >= currentAllowance) {
-//             allowances[msg.sender][spender] = 0;
-//         } else {
-//             allowances[msg.sender][spender] -= subtractedValue;
-//         }
-//         return true;
-//     }
-
-//     // increaseApproval の実装
-//     function increaseApproval(
-//         address spender,
-//         uint256 addedValue
-//     ) external override {
-//         allowances[msg.sender][spender] += addedValue;
-//     }
-
-//     // transferAndCall の実装
-//     function transferAndCall(
-//         address to,
-//         uint256 value,
-//         bytes calldata data
-//     ) external override returns (bool success) {
-//         return true;
-//     }
-// }
-
-// // テストコントラクト
-// contract ShowtieTest is Test {
-//     Showtie public showtie;
-//     MockRouterClient public mockRouter;
-//     MockLinkToken public mockLinkToken;
-//     address public signProtocolContract = address(0x1234567890abcdef);
-
-//     function setUp() public {
-//         mockRouter = new MockRouterClient();
-//         mockLinkToken = new MockLinkToken();
-//         showtie = new Showtie(
-//             signProtocolContract,
-//             address(mockRouter),
-//             address(mockLinkToken)
-//         );
-//     }
-
-//     function testCreateInvitation() public {
-//         // ShowtieコントラクトにLINKトークンを供給
-//         uint256 initialLinkBalance = 1000 * 10 ** 18;
-//         mockLinkToken.mint(address(showtie), initialLinkBalance);
-
-//         // モックRouterでの手数料設定
-//         uint256 mockFee = 10 * 10 ** 18; // 10 LINKトークン
-//         mockRouter.setFee(mockFee);
-
-//         // テストデータ
-//         uint64 destinationChainSelector = 12345; // ダミーのチェーンセレクタ
-//         address targetContract = address(showtie); // テストのため同じコントラクトを使用
-//         string memory text = "Hello, CCIP!";
-
-//         // createInvitationを呼び出し
-//         vm.prank(address(0x1)); // 呼び出し元をシミュレート
-//         showtie.createInvitation(
-//             destinationChainSelector,
-//             targetContract,
-//             text
-//         );
-
-//         // LINKトークンの残高確認
-//         uint256 remainingLinkBalance = mockLinkToken.balanceOf(
-//             address(showtie)
-//         );
-//         assertEq(
-//             remainingLinkBalance,
-//             initialLinkBalance - mockFee,
-//             "Incorrect LINK balance after fee deduction"
-//         );
-
-//         // メッセージが正しく送信されたか確認
-//         // assertEq(
-//         //     mockRouter.lastSentMessage.receiver,
-//         //     abi.encode(targetContract),
-//         //     "Incorrect receiver"
-//         // );
-//         // assertEq(
-//         //     abi.decode(mockRouter.lastSentMessage.data, (string)),
-//         //     text,
-//         //     "Incorrect message data"
-//         // );
-
-//         // メッセージが正しく受信・処理されたか確認
-//         string memory lastReceivedText = showtie.getLastReceivedText();
-//         assertEq(
-//             lastReceivedText,
-//             text,
-//             "Received text does not match sent text"
-//         );
-
-//         // イベントの確認
-//         // vm.recordLogsを使用してイベントをキャプチャ
-//         vm.recordLogs();
-
-//         // 再度createInvitationを呼び出してログを記録
-//         vm.prank(address(0x2));
-//         showtie.createInvitation(
-//             destinationChainSelector,
-//             targetContract,
-//             text
-//         );
-
-//         // 記録されたログを取得
-//         Vm.Log[] memory logs = vm.getRecordedLogs();
-
-//         // InvitationCreatedイベントの存在を確認
-//         bool invitationCreatedEventFound = false;
-//         bytes32 invitationCreatedEventSignature = keccak256(
-//             "InvitationCreated()"
-//         );
-//         for (uint i = 0; i < logs.length; i++) {
-//             if (logs[i].topics[0] == invitationCreatedEventSignature) {
-//                 invitationCreatedEventFound = true;
-//                 break;
-//             }
-//         }
-//         assertTrue(
-//             invitationCreatedEventFound,
-//             "InvitationCreated event not found"
-//         );
-
-//         // CCIPMessageSentイベントの存在を確認
-//         bool ccipMessageSentEventFound = false;
-//         bytes32 ccipMessageSentEventSignature = keccak256(
-//             "CCIPMessageSent(bytes32,uint64,address,string,address,uint256)"
-//         );
-//         for (uint i = 0; i < logs.length; i++) {
-//             if (logs[i].topics[0] == ccipMessageSentEventSignature) {
-//                 ccipMessageSentEventFound = true;
-//                 break;
-//             }
-//         }
-//         assertTrue(
-//             ccipMessageSentEventFound,
-//             "CCIPMessageSent event not found"
-//         );
-//     }
-// }
+    // function testVerifyECDSASignature() public view {
+    //     address signerAddress = 0x9cE87dcbD55f8eD571EFF906584cB6A83B5c2352;
+    //     uint256 dappsId = 1;
+    //     uint64 destinationChainSelector = 10344971235874465080;
+    //     bytes memory message = abi.encodePacked(
+    //         dappsId,
+    //         destinationChainSelector
+    //     );
+    //     console.logBytes(message);
+    //     bytes32 messageHash = keccak256(message);
+    //     console.logBytes32(messageHash);
+    //     bytes
+    //         memory signature = hex"01bd50efcc1d0c9bf6e446eed0a6c74a1293da87519d9d9fe86a021a36952c1f428492c2a745305cf72e4fc575322cad5be72547718805fec059df88c29ad7461c";
+    //     bool isValid = showtie.verifyECDSASignature(
+    //         signerAddress,
+    //         messageHash,
+    //         signature
+    //     );
+    //     assertEq(isValid, true);
+    //     // bytes32 fakeMessageHash = keccak256(abi.encodePacked("Fake message"));
+    //     // bool isInvalid = showtie._verifyECDSASignature(signerAddress, fakeMessageHash, signature);
+    //     // assertFalse(isInvalid, "Signature verification passed for invalid message hash");
+    // }
+}

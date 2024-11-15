@@ -36,7 +36,7 @@ contract callCCIP is Script {
         string memory text = "Hello, this is an invitation!";
 
         // 関数を実行
-        showtie.createInvitation(destinationChainSelector, targetContract, text);
+        showtie.createInvitation(destinationChainSelector, targetContract, 0, bytes(""));
 
         // デプロイの終了
         vm.stopBroadcast();

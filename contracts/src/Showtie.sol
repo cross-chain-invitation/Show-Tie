@@ -6,7 +6,11 @@ import {Client} from "@chainlink/contracts-ccip/src/v0.8/ccip/libraries/Client.s
 import {IRouterClient} from "@chainlink/contracts-ccip/src/v0.8/ccip/interfaces/IRouterClient.sol";
 import {LinkTokenInterface} from "@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol";
 import {CCIPReceiver} from "@chainlink/contracts-ccip/src/v0.8/ccip/applications/CCIPReceiver.sol";
+// import { ISP } from "@ethsign/sign-protocol-evm/src/interfaces/ISP.sol";
+// import { Attestation } from "@ethsign/sign-protocol-evm/src/models/Attestation.sol";
+// import { DataLocation } from "@ethsign/sign-protocol-evm/src/models/DataLocation.sol";
 import "solady/utils/ECDSA.sol";
+import "forge-std/console.sol";
 
 contract Showtie is OwnerIsCreator, CCIPReceiver {
     using ECDSA for bytes32;
@@ -64,6 +68,7 @@ contract Showtie is OwnerIsCreator, CCIPReceiver {
         uint256 dappsId,
         bytes calldata signature
     ) external {
+        
         bytes32 ccipMessageId = _sendInvitationViaCCIP(destinationChainSelector, targetContract, dappsId, signature);
         emit InvitationCreated(ccipMessageId);
     }
@@ -100,7 +105,7 @@ contract Showtie is OwnerIsCreator, CCIPReceiver {
             abi.decode(any2EvmMessage.data, (uint256, address, bytes));
 
         require(
-            _verifyECDSASignature(
+            verifyECDSASignature(
                 sender, keccak256(abi.encodePacked(dappsId, any2EvmMessage.sourceChainSelector)), signature
             )
         );
@@ -120,7 +125,7 @@ contract Showtie is OwnerIsCreator, CCIPReceiver {
         require(isInvited[msg.sender] == false, "Already invited");
         require(isSignatureUsed[captchaSignature] == false, "Signature already used");
         require(
-            _verifyECDSASignature(captchaSigner, keccak256(abi.encodePacked(dappsId, msg.sender)), captchaSignature)
+            verifyECDSASignature(captchaSigner, keccak256(abi.encodePacked(dappsId, msg.sender)), captchaSignature)
         );
 
         // TODO : Create Invitee Attestation
@@ -137,13 +142,27 @@ contract Showtie is OwnerIsCreator, CCIPReceiver {
         return s_lastReceivedText;
     }
 
-    function _verifyECDSASignature(address signerAddress, bytes32 messageHash, bytes memory signature)
-        internal
-        view
+    function verifyECDSASignature(address signerAddress, bytes32 messageHash, bytes memory signature)
+        public view
         returns (bool)
-    {
+    {   
+        console.log("Signer Address: ", signerAddress);
         bytes32 ethSignedMessageHash = messageHash.toEthSignedMessageHash();
         address recoveredSigner = ethSignedMessageHash.recover(signature);
+        console.logAddress(recoveredSigner);
         return recoveredSigner == signerAddress;
+    }
+
+    function verifyV2(
+        address signerAddress,
+        string calldata message,
+        bytes calldata signature
+    ) public view {
+        bytes32 signedMessageHash = keccak256(abi.encode(message))
+            .toEthSignedMessageHash();
+        require(
+            signedMessageHash.recover(signature) == signerAddress,
+            "signature not valid v2"
+        );
     }
 }
