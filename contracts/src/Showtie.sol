@@ -185,77 +185,20 @@ contract Showtie is OwnerIsCreator, CCIPReceiver {
         return s_lastReceivedText;
     }
 
-    // function verifyECDSASignature(
-    //     address signerAddress,
-    //     bytes32 messageHash,
-    //     bytes memory signature
-    // ) public view returns (bool) {
-    //     console.log("Signer Address: ", signerAddress);
-    //     bytes32 ethSignedMessageHash = messageHash.toEthSignedMessageHash();
-    //     address recovered = ECDSA.recover(
-    //         MessageHashUtils.toEthSignedMessageHash(messageHash),
-    //         signature
-    //     );
-    //     console.logAddress(recovered);
-    //     return recovered == signerAddress;
-    // }
+    function verify(
+        bytes32 hashedMessage,
+        bytes memory signature,
+        address expectedSigner
+    ) public view returns (bool) {
+        // Ethereum署名形式のハッシュを計算
+        console.logBytes32(hashedMessage);
+        bytes32 messageHash = hashedMessage.toEthSignedMessageHash();
+        console.logBytes32(messageHash);
+        // 署名者を復元
+        address recoveredSigner = messageHash.recover(signature);
+        console.logAddress(recoveredSigner);
 
-    function verifySignature(address signer, bytes32 messageHash, bytes memory signature)
-        public
-        view
-        returns (bool)
-    {
-        // Ethereum標準の署名ハッシュを作成
-        bytes32 ethSignedMessageHash = messageHash.toEthSignedMessageHash();
-
-        // 署名からアドレスを復元
-        address recoveredSigner = recoverV2(ethSignedMessageHash, signature);
-
-        // 署名者のアドレスと比較
-        return recoveredSigner == signer;
-    }
-
-    function verifyV2(
-        address signerAddress,
-        string calldata message,
-        bytes calldata signature
-    ) public view {
-        bytes32 signedMessageHash = keccak256(abi.encode(message))
-            .toEthSignedMessageHash();
-        require(
-            signedMessageHash.recover(signature) == signerAddress,
-            "signature not valid v2"
-        );
-    }
-
-    function recoverV2(bytes32 hash, bytes memory sig) public pure returns (address) {
-        bytes32 r;
-        bytes32 s;
-        uint8 v;
-
-        // Check the signature length
-        if (sig.length != 65) {
-            return (address(0));
-        }
-
-        // Divide the signature in r, s and v variables
-        assembly {
-            r := mload(add(sig, 32))
-            s := mload(add(sig, 64))
-            v := byte(0, mload(add(sig, 96)))
-        }
-
-        // Version of signature should be 27 or 28, but 0 and 1 are also possible versions
-        if (v < 27) {
-            v += 27;
-        }
-
-        // If the version is correct return the signer address
-        if (v != 27 && v != 28) {
-            return (address(0));
-        } else {
-            // solhint-disable-next-line arg-overflow
-            return ecrecover(hash, v, r, s);
-        }
+        // 署名者が一致するか確認
+        return recoveredSigner == expectedSigner;
     }
 }
