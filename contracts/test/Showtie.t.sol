@@ -13,10 +13,10 @@ contract VerifyECDSASignatureTest is Test {
     uint256 privateKey =
         0x1010101010101010101010101010101010101010101010101010101010101010;
 
-    function setUp() public {
-        showtie = new Showtie(address(1), address(2), address(3));
-        signer = vm.addr(privateKey); // 秘密鍵に対応するアドレスを生成
-    }
+    // function setUp() public {
+    //     showtie = new Showtie(address(1), address(2), address(3));
+    //     signer = vm.addr(privateKey); // 秘密鍵に対応するアドレスを生成
+    // }
 
     function testVerify() public view {
         uint256 dappsId = 1;
