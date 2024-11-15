@@ -37,13 +37,21 @@ contract Showtie is OwnerIsCreator, CCIPReceiver {
     );
     error NotEnoughBalance(uint256 currentBalance, uint256 calculatedFees);
 
-    constructor(address _signProtocolContract, address _router, address _link)CCIPReceiver(_router) {
+    constructor(
+        address _signProtocolContract,
+        address _router,
+        address _link
+    ) CCIPReceiver(_router) {
         signProtocolContract = _signProtocolContract;
         s_router = IRouterClient(_router);
         s_linkToken = LinkTokenInterface(_link);
     }
 
-    function createInvitation(uint64 destinationChainSelector, address targetContract, string calldata text) external {
+    function createInvitation(
+        uint64 destinationChainSelector,
+        address targetContract,
+        string calldata text
+    ) external {
         _sendInvitationViaCCIP(destinationChainSelector, targetContract, text);
         emit InvitationCreated();
     }
@@ -52,31 +60,28 @@ contract Showtie is OwnerIsCreator, CCIPReceiver {
         uint64 destinationChainSelector,
         address receiver,
         string calldata text
-    ) internal returns (bytes32 messageId) { 
+    ) internal returns (bytes32 messageId) {
         Client.EVM2AnyMessage memory evm2AnyMessage = Client.EVM2AnyMessage({
             receiver: abi.encode(receiver),
-            data: abi.encode(text), 
+            data: abi.encode(text),
             tokenAmounts: new Client.EVMTokenAmount[](0),
             extraArgs: Client._argsToBytes(
                 Client.EVMExtraArgsV2({
-                    gasLimit: 200_000, 
-                    allowOutOfOrderExecution: true 
+                    gasLimit: 200_000,
+                    allowOutOfOrderExecution: true
                 })
             ),
             feeToken: address(s_linkToken)
         });
-
         uint256 fees = s_router.getFee(
             destinationChainSelector,
             evm2AnyMessage
         );
-
         if (fees > s_linkToken.balanceOf(address(this)))
             revert NotEnoughBalance(s_linkToken.balanceOf(address(this)), fees);
 
         s_linkToken.approve(address(s_router), fees);
         messageId = s_router.ccipSend(destinationChainSelector, evm2AnyMessage);
-
         emit CCIPMessageSent(
             messageId,
             destinationChainSelector,
@@ -91,7 +96,14 @@ contract Showtie is OwnerIsCreator, CCIPReceiver {
     function _ccipReceive(
         Client.Any2EVMMessage memory any2EvmMessage
     ) internal override {
-         s_lastReceivedText= abi.decode(any2EvmMessage.data, (string)); // abi-decoding of the sent text
+        s_lastReceivedText = abi.decode(any2EvmMessage.data, (string)); // abi-decoding of the sent text
+
+        // TODO : 署名とウォレットアドレスの検証
+        // Dapps ID, origial Chain ID,のメッセージに対する署名が、InvitorのAddressになっているかを検証
+
+        // TODO : Cross-Chain Attesttationを作成
+
+        // TODO :  Cross-Chain Attestationの保存
 
         emit MessageReceived(
             any2EvmMessage.messageId,
@@ -125,4 +137,9 @@ contract Showtie is OwnerIsCreator, CCIPReceiver {
         address invitee,
         bytes memory signature
     ) internal pure returns (bool) {}
+
+    // Use it only for test
+    function getLastReceivedText() external view returns (string memory) {
+        return s_lastReceivedText;
+    }
 }
