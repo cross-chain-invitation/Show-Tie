@@ -6,9 +6,10 @@ import {Client} from "@chainlink/contracts-ccip/src/v0.8/ccip/libraries/Client.s
 import {IRouterClient} from "@chainlink/contracts-ccip/src/v0.8/ccip/interfaces/IRouterClient.sol";
 import {LinkTokenInterface} from "@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol";
 import {CCIPReceiver} from "@chainlink/contracts-ccip/src/v0.8/ccip/applications/CCIPReceiver.sol";
-// import { ISP } from "@ethsign/sign-protocol-evm/src/interfaces/ISP.sol";
-// import { Attestation } from "@ethsign/sign-protocol-evm/src/models/Attestation.sol";
-// import { DataLocation } from "@ethsign/sign-protocol-evm/src/models/DataLocation.sol";
+import {ISP} from "@ethsign/sign-protocol-evm/src/interfaces/ISP.sol";
+import {ISPHook} from "@ethsign/sign-protocol-evm/src/interfaces/ISPHook.sol";
+import {Attestation} from "@ethsign/sign-protocol-evm/src/models/Attestation.sol";
+import {DataLocation} from "@ethsign/sign-protocol-evm/src/models/DataLocation.sol";
 import "solady/utils/ECDSA.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 import "forge-std/console.sol";
@@ -16,11 +17,17 @@ import "forge-std/console.sol";
 contract Showtie is OwnerIsCreator, CCIPReceiver {
     using ECDSA for bytes32;
 
-    address public signProtocolContract;
     address public ccipContract;
     address private captchaSigner;
+    uint64 public chainSelector;
+    uint64 public schemaId;
 
     IRouterClient private s_router;
+    ISP public spInstance;
+
+    uint64 public inviterSchemaId;
+    uint64 public inviteeSchemaId;
+    uint64 public crosschainSchemaId;
 
     string private s_lastReceivedText; // Store the last received text.
 
@@ -29,8 +36,9 @@ contract Showtie is OwnerIsCreator, CCIPReceiver {
     mapping(bytes32 => uint64) public crossChainAttestationIds;
     mapping(bytes => bool) public isSignatureUsed;
     mapping(address => bool) public isInvited;
+    mapping(uint256 => uint64) public dappsIdToChainSelector;
 
-    event InvitationCreated(bytes32 ccipMessageId);
+    event InvitationCreated(bytes32 ccipMessageId, uint64 attestationId);
     event CrossChainAttestationCreated();
     event InviteeAttestationCreated();
     // The chain selector of the destination chain.
@@ -65,12 +73,20 @@ contract Showtie is OwnerIsCreator, CCIPReceiver {
     constructor(
         address _signProtocolContract,
         address _router,
-        address _link
+        address _link,
+        uint64 _chainSelector,
+        uint64 _inviterSchemaId,
+        uint64 _inviteeSchemaId,
+        uint64 _crosschainSchemaId
     ) CCIPReceiver(_router) {
-        signProtocolContract = _signProtocolContract;
         s_router = IRouterClient(_router);
         s_linkToken = LinkTokenInterface(_link);
         captchaSigner = msg.sender;
+        chainSelector = _chainSelector;
+        spInstance = ISP(_signProtocolContract);
+        inviterSchemaId = _inviterSchemaId;
+        inviteeSchemaId = _inviteeSchemaId;
+        crosschainSchemaId = _crosschainSchemaId;
     }
 
     function createInvitation(
@@ -79,24 +95,49 @@ contract Showtie is OwnerIsCreator, CCIPReceiver {
         uint256 dappsId,
         bytes calldata signature
     ) external {
+        // B has confirm A's claim of having met them IRL
+        // We now make an attestation of having actually met IRL
+        bytes[] memory recipients = new bytes[](1);
+        recipients[0] = abi.encode(msg.sender);
+        Attestation memory a = Attestation({
+            schemaId: inviterSchemaId,
+            linkedAttestationId: 0,
+            attestTimestamp: 0,
+            revokeTimestamp: 0,
+            attester: address(this),
+            validUntil: 0,
+            dataLocation: DataLocation.ONCHAIN,
+            revoked: true,
+            recipients: recipients,
+            data: abi.encode(
+                msg.sender,
+                signature,
+                dappsId,
+                uint256(chainSelector),
+                uint256(destinationChainSelector)
+            )
+        });
+        uint64 attestationId = spInstance.attest(a, "", "", "");
         bytes32 ccipMessageId = _sendInvitationViaCCIP(
             destinationChainSelector,
             targetContract,
             dappsId,
-            signature
+            signature,
+            attestationId
         );
-        emit InvitationCreated(ccipMessageId);
+        emit InvitationCreated(ccipMessageId, attestationId);
     }
 
     function _sendInvitationViaCCIP(
         uint64 destinationChainSelector,
         address receiver,
         uint256 dappsId,
-        bytes calldata signature
+        bytes calldata signature,
+        uint64 attestationId
     ) internal returns (bytes32 messageId) {
         Client.EVM2AnyMessage memory evm2AnyMessage = Client.EVM2AnyMessage({
             receiver: abi.encode(receiver),
-            data: abi.encode(dappsId, msg.sender, signature),
+            data: abi.encode(dappsId, msg.sender, signature, attestationId),
             tokenAmounts: new Client.EVMTokenAmount[](0),
             extraArgs: Client._argsToBytes(
                 Client.EVMExtraArgsV2({
@@ -128,14 +169,24 @@ contract Showtie is OwnerIsCreator, CCIPReceiver {
         return messageId;
     }
 
+    function getCrossChainAttestationId(
+        address inviterAddress,
+        uint256 dappsId
+    ) internal view returns (uint64) {
+        bytes32 key = keccak256(abi.encodePacked(inviterAddress, dappsId));
+        return crossChainAttestationIds[key];
+    }
+
     function _ccipReceive(
         Client.Any2EVMMessage memory any2EvmMessage
     ) internal override {
         s_lastReceivedText = abi.decode(any2EvmMessage.data, (string)); // abi-decoding of the sent text
-        (uint256 dappsId, address sender, bytes memory signature) = abi.decode(
-            any2EvmMessage.data,
-            (uint256, address, bytes)
-        );
+        (
+            uint256 dappsId,
+            address sender,
+            bytes memory signature,
+            uint64 attestationId
+        ) = abi.decode(any2EvmMessage.data, (uint256, address, bytes, uint64));
 
         // require(
         //     verifyECDSASignature(
@@ -143,8 +194,29 @@ contract Showtie is OwnerIsCreator, CCIPReceiver {
         //     )
         // );
         // TODO : Cross-Chain Attesttationを作成
-
-        // TODO :  Cross-Chain Attestationの保存
+        bytes[] memory recipients = new bytes[](1);
+        recipients[0] = abi.encode(msg.sender);
+        Attestation memory a = Attestation({
+            schemaId: inviterSchemaId,
+            linkedAttestationId: 0,
+            attestTimestamp: 0,
+            revokeTimestamp: 0,
+            attester: address(this),
+            validUntil: 0,
+            dataLocation: DataLocation.ONCHAIN,
+            revoked: false,
+            recipients: recipients,
+            data: abi.encode(
+                sender,
+                attestationId,
+                dappsId,
+                any2EvmMessage.sourceChainSelector,
+                uint256(chainSelector)
+            )
+        });
+        uint64 crossChainAttestationId = spInstance.attest(a, "", "", "");
+        bytes32 key = keccak256(abi.encodePacked(sender, dappsId));
+        crossChainAttestationIds[key] = crossChainAttestationId;
 
         emit MessageReceived(
             any2EvmMessage.messageId,
@@ -168,17 +240,40 @@ contract Showtie is OwnerIsCreator, CCIPReceiver {
         //     verifyECDSASignature(captchaSigner, keccak256(abi.encodePacked(dappsId, msg.sender)), captchaSignature)
         // );
 
+        uint64 inviterAttestationId = getCrossChainAttestationId(
+            invitor,
+            dappsId
+        );
+        uint64 sourceChainSelector = dappsIdToChainSelector[dappsId];
+
         // TODO : Create Invitee Attestation
+        bytes[] memory recipients = new bytes[](1);
+        recipients[0] = abi.encode(msg.sender);
+        Attestation memory a = Attestation({
+            schemaId: inviterSchemaId,
+            linkedAttestationId: inviterAttestationId,
+            attestTimestamp: 0,
+            revokeTimestamp: 0,
+            attester: address(this),
+            validUntil: 0,
+            dataLocation: DataLocation.ONCHAIN,
+            revoked: false,
+            recipients: recipients,
+            data: abi.encode(
+                msg.sender,
+                invitor,
+                dappsId,
+                captchaSignature,
+                sourceChainSelector,
+                uint256(chainSelector)
+            )
+        });
+        uint64 AttestationId = spInstance.attest(a, "", "", "");
+
         // TODO : Emit Event
     }
 
-    function getCrossChainAttestationId(
-        address inviterAddress,
-        uint256 dappsId
-    ) external view returns (uint64) {
-        bytes32 key = keccak256(abi.encodePacked(inviterAddress, dappsId));
-        return crossChainAttestationIds[key];
-    }
+    
 
     // Use it only for test
     function getLastReceivedText() external view returns (string memory) {
