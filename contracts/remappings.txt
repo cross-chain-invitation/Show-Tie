@@ -6,3 +6,4 @@ forge-std/=lib/forge-std/src/
 solady/=lib/solady/src/
 @ethsign/sign-protocol-evm/=node_modules/@ethsign/sign-protocol-evm/
 @openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/
+@openzeppelin/contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/contracts/

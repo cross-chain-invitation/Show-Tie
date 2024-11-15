@@ -3,9 +3,20 @@
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import React from 'react';
-import { useDynamicContext } from '@dynamic-labs/sdk-react-core';
-import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import {
+  ConnectWallet,
+  Wallet,
+  WalletDropdown,
+  WalletDropdownDisconnect,
+} from '@coinbase/onchainkit/wallet';
+import {
+  Address,
+  Avatar,
+  Name,
+  Identity,
+} from '@coinbase/onchainkit/identity';
+import { useState, useEffect } from 'react';
 
 interface BackgroundElement {
   left: string;
@@ -16,22 +27,8 @@ interface BackgroundElement {
 
 export default function Home() {
   const router = useRouter();
-  const { user, primaryWallet, awaitingSignatureState, setShowAuthFlow } =
-    useDynamicContext();
-  const [isConnected, setIsConnected] = useState(false);
-  const [address, setAddress] = useState('');
+  const [backgroundElements, setBackgroundElements] = useState<BackgroundElement[]>([]);
   const [hue, setHue] = useState(0);
-  const [backgroundElements, setBackgroundElements] = useState<
-    BackgroundElement[]
-  >([]);
-
-  useEffect(() => {
-    console.log('Dynamic Auth State:', {
-      user,
-      primaryWallet,
-      awaitingSignatureState,
-    });
-  }, [user, primaryWallet, awaitingSignatureState]);
 
   useEffect(() => {
     setHue(0);
@@ -40,24 +37,6 @@ export default function Home() {
     }, 50);
     return () => clearInterval(interval);
   }, []);
-
-  useEffect(() => {
-    if (primaryWallet?.address && user) {
-      setIsConnected(true);
-      setAddress(primaryWallet.address);
-      console.log('ウォレット接続完了:', primaryWallet.address);
-
-      // ローカルストレージにウォレット情報を保存
-      localStorage.setItem('walletAddress', primaryWallet.address);
-      localStorage.setItem('isConnected', 'true');
-
-      try {
-        router.push('/select');
-      } catch (error) {
-        console.error('遷移エラー:', error);
-      }
-    }
-  }, [primaryWallet, user]);
 
   useEffect(() => {
     const elements = Array.from({ length: 20 }).map((_, i) => ({
@@ -132,44 +111,24 @@ export default function Home() {
             >
               Show-Tie
             </motion.h1>
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="relative"
-            >
-              <Button
-                disabled={isConnected}
+            
+            <Wallet>
+              <ConnectWallet 
+                onConnect={() => router.push('/select')}
                 className="w-full bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 text-white font-bold py-4 rounded-full text-lg relative overflow-hidden group"
-                onClick={() => {
-                  console.log('認証フローを開始します');
-                  try {
-                    setShowAuthFlow(true);
-                    console.log('pushing to /select');
-                    // router.push('/select');
-                  } catch (error) {
-                    console.error('遷移エラー:', error);
-                  }
-                }}
               >
-                Connect Wallet
-                <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-green-400 to-blue-500"
-                  initial={{ x: '100%' }}
-                  whileHover={{ x: 0 }}
-                  transition={{ duration: 0.5 }}
-                />
-              </Button>
-            </motion.div>
-            {/* {isConnected && (
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="text-sm text-white bg-white/20 p-4 rounded-xl break-all backdrop-blur-lg"
-              >
-                <Globe className="inline-block mr-2 mb-1" />
-                Connected: {address}
-              </motion.div>
-            )} */}
+                <Name />
+              </ConnectWallet>
+              <WalletDropdown>
+                <Identity className="px-4 pt-3 pb-2" hasCopyAddressOnClick>
+                  <Avatar />
+                  <Name />
+                  <Address />
+                </Identity>
+                <WalletDropdownDisconnect />
+              </WalletDropdown>
+            </Wallet>
+            
           </div>
         </motion.div>
       </div>

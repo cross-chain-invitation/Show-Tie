@@ -6,98 +6,91 @@ import { Input } from '@/components/ui/input';
 import React from 'react';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useDynamicContext } from '@dynamic-labs/sdk-react-core';
-import { encodePacked } from 'viem';
+import { encodePacked, keccak256 } from 'viem';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import data from '@/public/data.json';
-import { keccak256, toBytes } from 'viem/utils';
-import { verifyMessage } from 'viem';
+import { useAccount, useSignMessage, useChainId } from 'wagmi';
+import { createPublicClient, http } from 'viem';
 
 export default function SelectPage() {
-  const { primaryWallet, setShowAuthFlow, networkConfigurations } =
-    useDynamicContext();
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
   const [dappsId, setDappsId] = useState('');
   const [inviterAddress, setInviterAddress] = useState('');
   const router = useRouter();
+  const { signMessageAsync } = useSignMessage();
+  const chainId = useChainId();
+  const { address, isConnected } = useAccount();
 
   const handleSign = async () => {
     try {
+      if (!isConnected) {
+        toast.error('ウォレットを接続してください');
+        return;
+      }
+
       if (!dappsId) {
         toast.error('Please Enter Dapps ID');
         return;
       }
 
-      console.log(
-        'networkConfigurations?.evm?.[0]?.chainId',
-        networkConfigurations?.evm?.[0]?.chainId
-      );
+      const chainSelectorId = getChainSelectorIdByChainId(chainId.toString());
 
-      const chainSelectorId = getChainSelectorIdByChainId(
-        (networkConfigurations?.evm?.[0]?.chainId || '').toString()
-      );
+  
+      console.log('chainSelectorId:', chainSelectorId);
+      console.log('address:', address);
+
+      console.log('chainId:', chainId);
+      
       if (!chainSelectorId) {
         toast.error('Chain selector ID not found');
         return;
       }
 
-      console.log('chainSelectorId', chainSelectorId);
-
-      const message = encodePacked(
+      // パックされたメッセージを作成
+      const packedMessage = encodePacked(
         ['uint256', 'uint64'],
         [BigInt(dappsId), BigInt(chainSelectorId)]
       );
 
-      console.log('dappsId', dappsId);
-      console.log('chainSelectorId', chainSelectorId);
-      console.log('message', message);
+      // ECDSA署名用のメッセージハッシュを作成
+      const messageHash = keccak256(packedMessage);
+      
+      // プレフィックスを追加してEthereumの署名メッセージを作成
+      // const prefixedMessage = `\x19Ethereum Signed Message:\n32${messageHash.slice(2)}`;
+      // const prefixedMessageHash = keccak256(prefixedMessage);
 
-      const messageHash = keccak256(toBytes(message));
-      console.log('messageHash', messageHash);
-
-      const signature = await primaryWallet?.signMessage(messageHash);
+      // ECDSA署名を生成
+      const signature = await signMessageAsync({
+        account: address, 
+        message: { raw: messageHash }
+      });
       console.log('signature:', signature);
 
-       // viemを使用した署名の検証
-    if (signature) {
-      const isValid = await verifyMessage({
-        address: primaryWallet.address,
-        message: messageHash,
-        signature: signature,
-      });
-
-      console.log('Signature verification result:', isValid);
-      console.log('Signer address:', primaryWallet.address);
-
-      if (isValid) {
-        toast.success('署名が正しく検証されました');
-      } else {
-        toast.error('署名の検証に失敗しました');
-      }
-    }
+      console.log('ECDSA signature:', signature);
+      toast.success('ECDSA署名が生成されました');
+      
     } catch (error) {
-      toast.error(`signMessage error: ${error instanceof Error ? error.message : String(error)}`);
+      toast.error(`署名エラー: ${error instanceof Error ? error.message : String(error)}`);
     }
   };
 
   useEffect(() => {
-    // check connected wallet info when loading the page
-    const checkConnection = async () => {
-      const isConnected = localStorage.getItem('isConnected') === 'true';
-      if (isConnected && !primaryWallet) {
-        setShowAuthFlow(true);
-      }
-      setIsInitialized(true);
-    };
+    // const checkConnection = async () => {
+    //   const isConnected = localStorage.getItem('isConnected') === 'true';
+    //   if (isConnected && !primaryWallet) {
+    //     setShowAuthFlow(true);
+    //   }
+    //   setIsInitialized(true);
+    // };
 
-    checkConnection();
+    // checkConnection();
 
-    if (!primaryWallet) {
-      router.push('/');
-    }
+    // if (!primaryWallet) {
+    //   router.push('/');
+    // }
   }, []);
 
   const handleSelect = (option: string) => {
@@ -116,7 +109,9 @@ export default function SelectPage() {
         animate={{ opacity: 1, y: 0 }}
         className="mt-8 space-y-4"
       >
-        {selectedOption === 'inviter' ? (
+        {!isConnected ? (
+          <></>
+        ) : selectedOption === 'inviter' ? (
           // inviter form
           <>
             <h2 className="text-xl font-bold text-white mb-4">
@@ -150,7 +145,8 @@ export default function SelectPage() {
               className="bg-white/10 border-white/20 text-white"
             />
           </>
-        )}
+        )
+        }
       </motion.div>
     );
   };
