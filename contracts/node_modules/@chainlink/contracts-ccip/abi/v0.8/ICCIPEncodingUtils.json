@@ -1,0 +1,157 @@
+[
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "enum Internal.OCRPluginType",
+            "name": "pluginType",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint64",
+            "name": "chainSelector",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint8",
+            "name": "FRoleDON",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint64",
+            "name": "offchainConfigVersion",
+            "type": "uint64"
+          },
+          {
+            "internalType": "bytes",
+            "name": "offrampAddress",
+            "type": "bytes"
+          },
+          {
+            "internalType": "bytes",
+            "name": "rmnHomeAddress",
+            "type": "bytes"
+          },
+          {
+            "components": [
+              {
+                "internalType": "bytes32",
+                "name": "p2pId",
+                "type": "bytes32"
+              },
+              {
+                "internalType": "bytes",
+                "name": "signerKey",
+                "type": "bytes"
+              },
+              {
+                "internalType": "bytes",
+                "name": "transmitterKey",
+                "type": "bytes"
+              }
+            ],
+            "internalType": "struct CCIPHome.OCR3Node[]",
+            "name": "nodes",
+            "type": "tuple[]"
+          },
+          {
+            "internalType": "bytes",
+            "name": "offchainConfig",
+            "type": "bytes"
+          }
+        ],
+        "internalType": "struct CCIPHome.OCR3Config[]",
+        "name": "config",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "exposeOCR3Config",
+    "outputs": [
+      {
+        "internalType": "bytes",
+        "name": "",
+        "type": "bytes"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "rmnReportVersion",
+        "type": "bytes32"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "destChainId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint64",
+            "name": "destChainSelector",
+            "type": "uint64"
+          },
+          {
+            "internalType": "address",
+            "name": "rmnRemoteContractAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "offrampAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "rmnHomeContractConfigDigest",
+            "type": "bytes32"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint64",
+                "name": "sourceChainSelector",
+                "type": "uint64"
+              },
+              {
+                "internalType": "bytes",
+                "name": "onRampAddress",
+                "type": "bytes"
+              },
+              {
+                "internalType": "uint64",
+                "name": "minSeqNr",
+                "type": "uint64"
+              },
+              {
+                "internalType": "uint64",
+                "name": "maxSeqNr",
+                "type": "uint64"
+              },
+              {
+                "internalType": "bytes32",
+                "name": "merkleRoot",
+                "type": "bytes32"
+              }
+            ],
+            "internalType": "struct Internal.MerkleRoot[]",
+            "name": "merkleRoots",
+            "type": "tuple[]"
+          }
+        ],
+        "internalType": "struct RMNRemote.Report",
+        "name": "rmnReport",
+        "type": "tuple"
+      }
+    ],
+    "name": "exposeRmnReport",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]

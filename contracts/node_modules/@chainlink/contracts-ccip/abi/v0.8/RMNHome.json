@@ -1,0 +1,795 @@
+[
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "expectedConfigDigest",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "gotConfigDigest",
+        "type": "bytes32"
+      }
+    ],
+    "name": "ConfigDigestMismatch",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "configDigest",
+        "type": "bytes32"
+      }
+    ],
+    "name": "DigestNotFound",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "DuplicateOffchainPublicKey",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "DuplicatePeerId",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "DuplicateSourceChain",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "MinObserversTooHigh",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NoOpStateTransitionNotAllowed",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "OutOfBoundsNodesLength",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "OutOfBoundsObserverNodeIndex",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "RevokingZeroDigestNotAllowed",
+    "type": "error"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "configDigest",
+        "type": "bytes32"
+      }
+    ],
+    "name": "ActiveConfigRevoked",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "configDigest",
+        "type": "bytes32"
+      }
+    ],
+    "name": "CandidateConfigRevoked",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "configDigest",
+        "type": "bytes32"
+      }
+    ],
+    "name": "ConfigPromoted",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "configDigest",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint32",
+        "name": "version",
+        "type": "uint32"
+      },
+      {
+        "components": [
+          {
+            "components": [
+              {
+                "internalType": "bytes32",
+                "name": "peerId",
+                "type": "bytes32"
+              },
+              {
+                "internalType": "bytes32",
+                "name": "offchainPublicKey",
+                "type": "bytes32"
+              }
+            ],
+            "internalType": "struct RMNHome.Node[]",
+            "name": "nodes",
+            "type": "tuple[]"
+          },
+          {
+            "internalType": "bytes",
+            "name": "offchainConfig",
+            "type": "bytes"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct RMNHome.StaticConfig",
+        "name": "staticConfig",
+        "type": "tuple"
+      },
+      {
+        "components": [
+          {
+            "components": [
+              {
+                "internalType": "uint64",
+                "name": "chainSelector",
+                "type": "uint64"
+              },
+              {
+                "internalType": "uint64",
+                "name": "minObservers",
+                "type": "uint64"
+              },
+              {
+                "internalType": "uint256",
+                "name": "observerNodesBitmap",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct RMNHome.SourceChain[]",
+            "name": "sourceChains",
+            "type": "tuple[]"
+          },
+          {
+            "internalType": "bytes",
+            "name": "offchainConfig",
+            "type": "bytes"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct RMNHome.DynamicConfig",
+        "name": "dynamicConfig",
+        "type": "tuple"
+      }
+    ],
+    "name": "ConfigSet",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "configDigest",
+        "type": "bytes32"
+      },
+      {
+        "components": [
+          {
+            "components": [
+              {
+                "internalType": "uint64",
+                "name": "chainSelector",
+                "type": "uint64"
+              },
+              {
+                "internalType": "uint64",
+                "name": "minObservers",
+                "type": "uint64"
+              },
+              {
+                "internalType": "uint256",
+                "name": "observerNodesBitmap",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct RMNHome.SourceChain[]",
+            "name": "sourceChains",
+            "type": "tuple[]"
+          },
+          {
+            "internalType": "bytes",
+            "name": "offchainConfig",
+            "type": "bytes"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct RMNHome.DynamicConfig",
+        "name": "dynamicConfig",
+        "type": "tuple"
+      }
+    ],
+    "name": "DynamicConfigSet",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      }
+    ],
+    "name": "OwnershipTransferRequested",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      }
+    ],
+    "name": "OwnershipTransferred",
+    "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "acceptOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getActiveDigest",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getAllConfigs",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint32",
+            "name": "version",
+            "type": "uint32"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "configDigest",
+            "type": "bytes32"
+          },
+          {
+            "components": [
+              {
+                "components": [
+                  {
+                    "internalType": "bytes32",
+                    "name": "peerId",
+                    "type": "bytes32"
+                  },
+                  {
+                    "internalType": "bytes32",
+                    "name": "offchainPublicKey",
+                    "type": "bytes32"
+                  }
+                ],
+                "internalType": "struct RMNHome.Node[]",
+                "name": "nodes",
+                "type": "tuple[]"
+              },
+              {
+                "internalType": "bytes",
+                "name": "offchainConfig",
+                "type": "bytes"
+              }
+            ],
+            "internalType": "struct RMNHome.StaticConfig",
+            "name": "staticConfig",
+            "type": "tuple"
+          },
+          {
+            "components": [
+              {
+                "components": [
+                  {
+                    "internalType": "uint64",
+                    "name": "chainSelector",
+                    "type": "uint64"
+                  },
+                  {
+                    "internalType": "uint64",
+                    "name": "minObservers",
+                    "type": "uint64"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "observerNodesBitmap",
+                    "type": "uint256"
+                  }
+                ],
+                "internalType": "struct RMNHome.SourceChain[]",
+                "name": "sourceChains",
+                "type": "tuple[]"
+              },
+              {
+                "internalType": "bytes",
+                "name": "offchainConfig",
+                "type": "bytes"
+              }
+            ],
+            "internalType": "struct RMNHome.DynamicConfig",
+            "name": "dynamicConfig",
+            "type": "tuple"
+          }
+        ],
+        "internalType": "struct RMNHome.VersionedConfig",
+        "name": "activeConfig",
+        "type": "tuple"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint32",
+            "name": "version",
+            "type": "uint32"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "configDigest",
+            "type": "bytes32"
+          },
+          {
+            "components": [
+              {
+                "components": [
+                  {
+                    "internalType": "bytes32",
+                    "name": "peerId",
+                    "type": "bytes32"
+                  },
+                  {
+                    "internalType": "bytes32",
+                    "name": "offchainPublicKey",
+                    "type": "bytes32"
+                  }
+                ],
+                "internalType": "struct RMNHome.Node[]",
+                "name": "nodes",
+                "type": "tuple[]"
+              },
+              {
+                "internalType": "bytes",
+                "name": "offchainConfig",
+                "type": "bytes"
+              }
+            ],
+            "internalType": "struct RMNHome.StaticConfig",
+            "name": "staticConfig",
+            "type": "tuple"
+          },
+          {
+            "components": [
+              {
+                "components": [
+                  {
+                    "internalType": "uint64",
+                    "name": "chainSelector",
+                    "type": "uint64"
+                  },
+                  {
+                    "internalType": "uint64",
+                    "name": "minObservers",
+                    "type": "uint64"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "observerNodesBitmap",
+                    "type": "uint256"
+                  }
+                ],
+                "internalType": "struct RMNHome.SourceChain[]",
+                "name": "sourceChains",
+                "type": "tuple[]"
+              },
+              {
+                "internalType": "bytes",
+                "name": "offchainConfig",
+                "type": "bytes"
+              }
+            ],
+            "internalType": "struct RMNHome.DynamicConfig",
+            "name": "dynamicConfig",
+            "type": "tuple"
+          }
+        ],
+        "internalType": "struct RMNHome.VersionedConfig",
+        "name": "candidateConfig",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getCandidateDigest",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "configDigest",
+        "type": "bytes32"
+      }
+    ],
+    "name": "getConfig",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint32",
+            "name": "version",
+            "type": "uint32"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "configDigest",
+            "type": "bytes32"
+          },
+          {
+            "components": [
+              {
+                "components": [
+                  {
+                    "internalType": "bytes32",
+                    "name": "peerId",
+                    "type": "bytes32"
+                  },
+                  {
+                    "internalType": "bytes32",
+                    "name": "offchainPublicKey",
+                    "type": "bytes32"
+                  }
+                ],
+                "internalType": "struct RMNHome.Node[]",
+                "name": "nodes",
+                "type": "tuple[]"
+              },
+              {
+                "internalType": "bytes",
+                "name": "offchainConfig",
+                "type": "bytes"
+              }
+            ],
+            "internalType": "struct RMNHome.StaticConfig",
+            "name": "staticConfig",
+            "type": "tuple"
+          },
+          {
+            "components": [
+              {
+                "components": [
+                  {
+                    "internalType": "uint64",
+                    "name": "chainSelector",
+                    "type": "uint64"
+                  },
+                  {
+                    "internalType": "uint64",
+                    "name": "minObservers",
+                    "type": "uint64"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "observerNodesBitmap",
+                    "type": "uint256"
+                  }
+                ],
+                "internalType": "struct RMNHome.SourceChain[]",
+                "name": "sourceChains",
+                "type": "tuple[]"
+              },
+              {
+                "internalType": "bytes",
+                "name": "offchainConfig",
+                "type": "bytes"
+              }
+            ],
+            "internalType": "struct RMNHome.DynamicConfig",
+            "name": "dynamicConfig",
+            "type": "tuple"
+          }
+        ],
+        "internalType": "struct RMNHome.VersionedConfig",
+        "name": "versionedConfig",
+        "type": "tuple"
+      },
+      {
+        "internalType": "bool",
+        "name": "ok",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getConfigDigests",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "activeConfigDigest",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "candidateConfigDigest",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "owner",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "digestToPromote",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "digestToRevoke",
+        "type": "bytes32"
+      }
+    ],
+    "name": "promoteCandidateAndRevokeActive",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "configDigest",
+        "type": "bytes32"
+      }
+    ],
+    "name": "revokeCandidate",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "components": [
+              {
+                "internalType": "bytes32",
+                "name": "peerId",
+                "type": "bytes32"
+              },
+              {
+                "internalType": "bytes32",
+                "name": "offchainPublicKey",
+                "type": "bytes32"
+              }
+            ],
+            "internalType": "struct RMNHome.Node[]",
+            "name": "nodes",
+            "type": "tuple[]"
+          },
+          {
+            "internalType": "bytes",
+            "name": "offchainConfig",
+            "type": "bytes"
+          }
+        ],
+        "internalType": "struct RMNHome.StaticConfig",
+        "name": "staticConfig",
+        "type": "tuple"
+      },
+      {
+        "components": [
+          {
+            "components": [
+              {
+                "internalType": "uint64",
+                "name": "chainSelector",
+                "type": "uint64"
+              },
+              {
+                "internalType": "uint64",
+                "name": "minObservers",
+                "type": "uint64"
+              },
+              {
+                "internalType": "uint256",
+                "name": "observerNodesBitmap",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct RMNHome.SourceChain[]",
+            "name": "sourceChains",
+            "type": "tuple[]"
+          },
+          {
+            "internalType": "bytes",
+            "name": "offchainConfig",
+            "type": "bytes"
+          }
+        ],
+        "internalType": "struct RMNHome.DynamicConfig",
+        "name": "dynamicConfig",
+        "type": "tuple"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "digestToOverwrite",
+        "type": "bytes32"
+      }
+    ],
+    "name": "setCandidate",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "newConfigDigest",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "components": [
+              {
+                "internalType": "uint64",
+                "name": "chainSelector",
+                "type": "uint64"
+              },
+              {
+                "internalType": "uint64",
+                "name": "minObservers",
+                "type": "uint64"
+              },
+              {
+                "internalType": "uint256",
+                "name": "observerNodesBitmap",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct RMNHome.SourceChain[]",
+            "name": "sourceChains",
+            "type": "tuple[]"
+          },
+          {
+            "internalType": "bytes",
+            "name": "offchainConfig",
+            "type": "bytes"
+          }
+        ],
+        "internalType": "struct RMNHome.DynamicConfig",
+        "name": "newDynamicConfig",
+        "type": "tuple"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "currentDigest",
+        "type": "bytes32"
+      }
+    ],
+    "name": "setDynamicConfig",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      }
+    ],
+    "name": "transferOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "typeAndVersion",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]

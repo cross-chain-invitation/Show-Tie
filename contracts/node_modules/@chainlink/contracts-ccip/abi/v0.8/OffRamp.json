@@ -1,0 +1,1761 @@
+[
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint64",
+            "name": "chainSelector",
+            "type": "uint64"
+          },
+          {
+            "internalType": "contract IRMNRemote",
+            "name": "rmnRemote",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "tokenAdminRegistry",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "nonceManager",
+            "type": "address"
+          }
+        ],
+        "internalType": "struct OffRamp.StaticConfig",
+        "name": "staticConfig",
+        "type": "tuple"
+      },
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "feeQuoter",
+            "type": "address"
+          },
+          {
+            "internalType": "uint32",
+            "name": "permissionLessExecutionThresholdSeconds",
+            "type": "uint32"
+          },
+          {
+            "internalType": "address",
+            "name": "messageInterceptor",
+            "type": "address"
+          }
+        ],
+        "internalType": "struct OffRamp.DynamicConfig",
+        "name": "dynamicConfig",
+        "type": "tuple"
+      },
+      {
+        "components": [
+          {
+            "internalType": "contract IRouter",
+            "name": "router",
+            "type": "address"
+          },
+          {
+            "internalType": "uint64",
+            "name": "sourceChainSelector",
+            "type": "uint64"
+          },
+          {
+            "internalType": "bool",
+            "name": "isEnabled",
+            "type": "bool"
+          },
+          {
+            "internalType": "bytes",
+            "name": "onRamp",
+            "type": "bytes"
+          }
+        ],
+        "internalType": "struct OffRamp.SourceChainConfigArgs[]",
+        "name": "sourceChainConfigs",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "inputs": [],
+    "name": "CanOnlySelfCall",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes",
+        "name": "reportOnRamp",
+        "type": "bytes"
+      },
+      {
+        "internalType": "bytes",
+        "name": "configOnRamp",
+        "type": "bytes"
+      }
+    ],
+    "name": "CommitOnRampMismatch",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "expected",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "actual",
+        "type": "bytes32"
+      }
+    ],
+    "name": "ConfigDigestMismatch",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint64",
+        "name": "sourceChainSelector",
+        "type": "uint64"
+      }
+    ],
+    "name": "CursedByRMN",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "EmptyReport",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "messageId",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes",
+        "name": "err",
+        "type": "bytes"
+      }
+    ],
+    "name": "ExecutionError",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "expected",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "actual",
+        "type": "uint256"
+      }
+    ],
+    "name": "ForkedChain",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "enum MultiOCR3Base.InvalidConfigErrorType",
+        "name": "errorType",
+        "type": "uint8"
+      }
+    ],
+    "name": "InvalidConfig",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "expected",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "got",
+        "type": "uint256"
+      }
+    ],
+    "name": "InvalidDataLength",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint64",
+        "name": "sourceChainSelector",
+        "type": "uint64"
+      },
+      {
+        "internalType": "uint64",
+        "name": "min",
+        "type": "uint64"
+      },
+      {
+        "internalType": "uint64",
+        "name": "max",
+        "type": "uint64"
+      }
+    ],
+    "name": "InvalidInterval",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint64",
+        "name": "sourceChainSelector",
+        "type": "uint64"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "messageId",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "uint256",
+        "name": "newLimit",
+        "type": "uint256"
+      }
+    ],
+    "name": "InvalidManualExecutionGasLimit",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "messageId",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "uint256",
+        "name": "tokenIndex",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "oldLimit",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "tokenGasOverride",
+        "type": "uint256"
+      }
+    ],
+    "name": "InvalidManualExecutionTokenGasOverride",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint64",
+        "name": "messageDestChainSelector",
+        "type": "uint64"
+      }
+    ],
+    "name": "InvalidMessageDestChainSelector",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint64",
+        "name": "sourceChainSelector",
+        "type": "uint64"
+      },
+      {
+        "internalType": "uint64",
+        "name": "sequenceNumber",
+        "type": "uint64"
+      },
+      {
+        "internalType": "enum Internal.MessageExecutionState",
+        "name": "newState",
+        "type": "uint8"
+      }
+    ],
+    "name": "InvalidNewState",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint64",
+        "name": "sourceChainSelector",
+        "type": "uint64"
+      }
+    ],
+    "name": "InvalidOnRampUpdate",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidProof",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidRoot",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "LeavesCannotBeEmpty",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "messageId",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "uint64",
+        "name": "sequenceNumber",
+        "type": "uint64"
+      }
+    ],
+    "name": "ManualExecutionGasAmountCountMismatch",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ManualExecutionGasLimitMismatch",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint64",
+        "name": "sourceChainSelector",
+        "type": "uint64"
+      }
+    ],
+    "name": "ManualExecutionNotYetEnabled",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes",
+        "name": "errorReason",
+        "type": "bytes"
+      }
+    ],
+    "name": "MessageValidationError",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NonUniqueSignatures",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "notPool",
+        "type": "address"
+      }
+    ],
+    "name": "NotACompatiblePool",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "OracleCannotBeZeroAddress",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes",
+        "name": "err",
+        "type": "bytes"
+      }
+    ],
+    "name": "ReceiverError",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "amountReleased",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "balancePre",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "balancePost",
+        "type": "uint256"
+      }
+    ],
+    "name": "ReleaseOrMintBalanceMismatch",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint64",
+        "name": "sourceChainSelector",
+        "type": "uint64"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "merkleRoot",
+        "type": "bytes32"
+      }
+    ],
+    "name": "RootAlreadyCommitted",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint64",
+        "name": "sourceChainSelector",
+        "type": "uint64"
+      }
+    ],
+    "name": "RootNotCommitted",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "SignatureVerificationDisabled",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "SignaturesOutOfRegistration",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint64",
+        "name": "sourceChainSelector",
+        "type": "uint64"
+      }
+    ],
+    "name": "SourceChainNotEnabled",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint64",
+        "name": "reportSourceChainSelector",
+        "type": "uint64"
+      },
+      {
+        "internalType": "uint64",
+        "name": "messageSourceChainSelector",
+        "type": "uint64"
+      }
+    ],
+    "name": "SourceChainSelectorMismatch",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "StaleCommitReport",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint8",
+        "name": "ocrPluginType",
+        "type": "uint8"
+      }
+    ],
+    "name": "StaticConfigCannotBeChanged",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint64",
+        "name": "sourceChainSelector",
+        "type": "uint64"
+      },
+      {
+        "internalType": "uint64",
+        "name": "sequenceNumber",
+        "type": "uint64"
+      }
+    ],
+    "name": "TokenDataMismatch",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes",
+        "name": "err",
+        "type": "bytes"
+      }
+    ],
+    "name": "TokenHandlingError",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "UnauthorizedSigner",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "UnauthorizedTransmitter",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "UnexpectedTokenData",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "expected",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "actual",
+        "type": "uint256"
+      }
+    ],
+    "name": "WrongMessageLength",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "WrongNumberOfSignatures",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ZeroAddressNotAllowed",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ZeroChainSelectorNotAllowed",
+    "type": "error"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint64",
+        "name": "sourceChainSelector",
+        "type": "uint64"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint64",
+        "name": "sequenceNumber",
+        "type": "uint64"
+      }
+    ],
+    "name": "AlreadyAttempted",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint64",
+            "name": "sourceChainSelector",
+            "type": "uint64"
+          },
+          {
+            "internalType": "bytes",
+            "name": "onRampAddress",
+            "type": "bytes"
+          },
+          {
+            "internalType": "uint64",
+            "name": "minSeqNr",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "maxSeqNr",
+            "type": "uint64"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "merkleRoot",
+            "type": "bytes32"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct Internal.MerkleRoot[]",
+        "name": "merkleRoots",
+        "type": "tuple[]"
+      },
+      {
+        "components": [
+          {
+            "components": [
+              {
+                "internalType": "address",
+                "name": "sourceToken",
+                "type": "address"
+              },
+              {
+                "internalType": "uint224",
+                "name": "usdPerToken",
+                "type": "uint224"
+              }
+            ],
+            "internalType": "struct Internal.TokenPriceUpdate[]",
+            "name": "tokenPriceUpdates",
+            "type": "tuple[]"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint64",
+                "name": "destChainSelector",
+                "type": "uint64"
+              },
+              {
+                "internalType": "uint224",
+                "name": "usdPerUnitGas",
+                "type": "uint224"
+              }
+            ],
+            "internalType": "struct Internal.GasPriceUpdate[]",
+            "name": "gasPriceUpdates",
+            "type": "tuple[]"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct Internal.PriceUpdates",
+        "name": "priceUpdates",
+        "type": "tuple"
+      }
+    ],
+    "name": "CommitReportAccepted",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint8",
+        "name": "ocrPluginType",
+        "type": "uint8"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes32",
+        "name": "configDigest",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
+        "internalType": "address[]",
+        "name": "signers",
+        "type": "address[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "address[]",
+        "name": "transmitters",
+        "type": "address[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint8",
+        "name": "F",
+        "type": "uint8"
+      }
+    ],
+    "name": "ConfigSet",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "feeQuoter",
+            "type": "address"
+          },
+          {
+            "internalType": "uint32",
+            "name": "permissionLessExecutionThresholdSeconds",
+            "type": "uint32"
+          },
+          {
+            "internalType": "address",
+            "name": "messageInterceptor",
+            "type": "address"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct OffRamp.DynamicConfig",
+        "name": "dynamicConfig",
+        "type": "tuple"
+      }
+    ],
+    "name": "DynamicConfigSet",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint64",
+        "name": "sourceChainSelector",
+        "type": "uint64"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint64",
+        "name": "sequenceNumber",
+        "type": "uint64"
+      },
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "messageId",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes32",
+        "name": "messageHash",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
+        "internalType": "enum Internal.MessageExecutionState",
+        "name": "state",
+        "type": "uint8"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes",
+        "name": "returnData",
+        "type": "bytes"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "gasUsed",
+        "type": "uint256"
+      }
+    ],
+    "name": "ExecutionStateChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      }
+    ],
+    "name": "OwnershipTransferRequested",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      }
+    ],
+    "name": "OwnershipTransferred",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "bytes32",
+        "name": "root",
+        "type": "bytes32"
+      }
+    ],
+    "name": "RootRemoved",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint64",
+        "name": "sourceChainSelector",
+        "type": "uint64"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint64",
+        "name": "sequenceNumber",
+        "type": "uint64"
+      }
+    ],
+    "name": "SkippedAlreadyExecutedMessage",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint64",
+        "name": "sourceChainSelector",
+        "type": "uint64"
+      }
+    ],
+    "name": "SkippedReportExecution",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint64",
+        "name": "sourceChainSelector",
+        "type": "uint64"
+      },
+      {
+        "components": [
+          {
+            "internalType": "contract IRouter",
+            "name": "router",
+            "type": "address"
+          },
+          {
+            "internalType": "bool",
+            "name": "isEnabled",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint64",
+            "name": "minSeqNr",
+            "type": "uint64"
+          },
+          {
+            "internalType": "bytes",
+            "name": "onRamp",
+            "type": "bytes"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct OffRamp.SourceChainConfig",
+        "name": "sourceConfig",
+        "type": "tuple"
+      }
+    ],
+    "name": "SourceChainConfigSet",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint64",
+        "name": "sourceChainSelector",
+        "type": "uint64"
+      }
+    ],
+    "name": "SourceChainSelectorAdded",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint64",
+            "name": "chainSelector",
+            "type": "uint64"
+          },
+          {
+            "internalType": "contract IRMNRemote",
+            "name": "rmnRemote",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "tokenAdminRegistry",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "nonceManager",
+            "type": "address"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct OffRamp.StaticConfig",
+        "name": "staticConfig",
+        "type": "tuple"
+      }
+    ],
+    "name": "StaticConfigSet",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint8",
+        "name": "ocrPluginType",
+        "type": "uint8"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes32",
+        "name": "configDigest",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint64",
+        "name": "sequenceNumber",
+        "type": "uint64"
+      }
+    ],
+    "name": "Transmitted",
+    "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "acceptOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "contract IRouter",
+            "name": "router",
+            "type": "address"
+          },
+          {
+            "internalType": "uint64",
+            "name": "sourceChainSelector",
+            "type": "uint64"
+          },
+          {
+            "internalType": "bool",
+            "name": "isEnabled",
+            "type": "bool"
+          },
+          {
+            "internalType": "bytes",
+            "name": "onRamp",
+            "type": "bytes"
+          }
+        ],
+        "internalType": "struct OffRamp.SourceChainConfigArgs[]",
+        "name": "sourceChainConfigUpdates",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "applySourceChainConfigUpdates",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "bytes32",
+            "name": "messageId",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "uint64",
+            "name": "sourceChainSelector",
+            "type": "uint64"
+          },
+          {
+            "internalType": "bytes",
+            "name": "sender",
+            "type": "bytes"
+          },
+          {
+            "internalType": "bytes",
+            "name": "data",
+            "type": "bytes"
+          },
+          {
+            "components": [
+              {
+                "internalType": "address",
+                "name": "token",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct Client.EVMTokenAmount[]",
+            "name": "destTokenAmounts",
+            "type": "tuple[]"
+          }
+        ],
+        "internalType": "struct Client.Any2EVMMessage",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "name": "ccipReceive",
+    "outputs": [],
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32[3]",
+        "name": "reportContext",
+        "type": "bytes32[3]"
+      },
+      {
+        "internalType": "bytes",
+        "name": "report",
+        "type": "bytes"
+      },
+      {
+        "internalType": "bytes32[]",
+        "name": "rs",
+        "type": "bytes32[]"
+      },
+      {
+        "internalType": "bytes32[]",
+        "name": "ss",
+        "type": "bytes32[]"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "rawVs",
+        "type": "bytes32"
+      }
+    ],
+    "name": "commit",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32[3]",
+        "name": "reportContext",
+        "type": "bytes32[3]"
+      },
+      {
+        "internalType": "bytes",
+        "name": "report",
+        "type": "bytes"
+      }
+    ],
+    "name": "execute",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "components": [
+              {
+                "internalType": "bytes32",
+                "name": "messageId",
+                "type": "bytes32"
+              },
+              {
+                "internalType": "uint64",
+                "name": "sourceChainSelector",
+                "type": "uint64"
+              },
+              {
+                "internalType": "uint64",
+                "name": "destChainSelector",
+                "type": "uint64"
+              },
+              {
+                "internalType": "uint64",
+                "name": "sequenceNumber",
+                "type": "uint64"
+              },
+              {
+                "internalType": "uint64",
+                "name": "nonce",
+                "type": "uint64"
+              }
+            ],
+            "internalType": "struct Internal.RampMessageHeader",
+            "name": "header",
+            "type": "tuple"
+          },
+          {
+            "internalType": "bytes",
+            "name": "sender",
+            "type": "bytes"
+          },
+          {
+            "internalType": "bytes",
+            "name": "data",
+            "type": "bytes"
+          },
+          {
+            "internalType": "address",
+            "name": "receiver",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "gasLimit",
+            "type": "uint256"
+          },
+          {
+            "components": [
+              {
+                "internalType": "bytes",
+                "name": "sourcePoolAddress",
+                "type": "bytes"
+              },
+              {
+                "internalType": "address",
+                "name": "destTokenAddress",
+                "type": "address"
+              },
+              {
+                "internalType": "uint32",
+                "name": "destGasAmount",
+                "type": "uint32"
+              },
+              {
+                "internalType": "bytes",
+                "name": "extraData",
+                "type": "bytes"
+              },
+              {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct Internal.Any2EVMTokenTransfer[]",
+            "name": "tokenAmounts",
+            "type": "tuple[]"
+          }
+        ],
+        "internalType": "struct Internal.Any2EVMRampMessage",
+        "name": "message",
+        "type": "tuple"
+      },
+      {
+        "internalType": "bytes[]",
+        "name": "offchainTokenData",
+        "type": "bytes[]"
+      },
+      {
+        "internalType": "uint32[]",
+        "name": "tokenGasOverrides",
+        "type": "uint32[]"
+      }
+    ],
+    "name": "executeSingleMessage",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getAllSourceChainConfigs",
+    "outputs": [
+      {
+        "internalType": "uint64[]",
+        "name": "",
+        "type": "uint64[]"
+      },
+      {
+        "components": [
+          {
+            "internalType": "contract IRouter",
+            "name": "router",
+            "type": "address"
+          },
+          {
+            "internalType": "bool",
+            "name": "isEnabled",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint64",
+            "name": "minSeqNr",
+            "type": "uint64"
+          },
+          {
+            "internalType": "bytes",
+            "name": "onRamp",
+            "type": "bytes"
+          }
+        ],
+        "internalType": "struct OffRamp.SourceChainConfig[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getDynamicConfig",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "feeQuoter",
+            "type": "address"
+          },
+          {
+            "internalType": "uint32",
+            "name": "permissionLessExecutionThresholdSeconds",
+            "type": "uint32"
+          },
+          {
+            "internalType": "address",
+            "name": "messageInterceptor",
+            "type": "address"
+          }
+        ],
+        "internalType": "struct OffRamp.DynamicConfig",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint64",
+        "name": "sourceChainSelector",
+        "type": "uint64"
+      },
+      {
+        "internalType": "uint64",
+        "name": "sequenceNumber",
+        "type": "uint64"
+      }
+    ],
+    "name": "getExecutionState",
+    "outputs": [
+      {
+        "internalType": "enum Internal.MessageExecutionState",
+        "name": "",
+        "type": "uint8"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getLatestPriceSequenceNumber",
+    "outputs": [
+      {
+        "internalType": "uint64",
+        "name": "",
+        "type": "uint64"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint64",
+        "name": "sourceChainSelector",
+        "type": "uint64"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "root",
+        "type": "bytes32"
+      }
+    ],
+    "name": "getMerkleRoot",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint64",
+        "name": "sourceChainSelector",
+        "type": "uint64"
+      }
+    ],
+    "name": "getSourceChainConfig",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "contract IRouter",
+            "name": "router",
+            "type": "address"
+          },
+          {
+            "internalType": "bool",
+            "name": "isEnabled",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint64",
+            "name": "minSeqNr",
+            "type": "uint64"
+          },
+          {
+            "internalType": "bytes",
+            "name": "onRamp",
+            "type": "bytes"
+          }
+        ],
+        "internalType": "struct OffRamp.SourceChainConfig",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getStaticConfig",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint64",
+            "name": "chainSelector",
+            "type": "uint64"
+          },
+          {
+            "internalType": "contract IRMNRemote",
+            "name": "rmnRemote",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "tokenAdminRegistry",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "nonceManager",
+            "type": "address"
+          }
+        ],
+        "internalType": "struct OffRamp.StaticConfig",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint8",
+        "name": "ocrPluginType",
+        "type": "uint8"
+      }
+    ],
+    "name": "latestConfigDetails",
+    "outputs": [
+      {
+        "components": [
+          {
+            "components": [
+              {
+                "internalType": "bytes32",
+                "name": "configDigest",
+                "type": "bytes32"
+              },
+              {
+                "internalType": "uint8",
+                "name": "F",
+                "type": "uint8"
+              },
+              {
+                "internalType": "uint8",
+                "name": "n",
+                "type": "uint8"
+              },
+              {
+                "internalType": "bool",
+                "name": "isSignatureVerificationEnabled",
+                "type": "bool"
+              }
+            ],
+            "internalType": "struct MultiOCR3Base.ConfigInfo",
+            "name": "configInfo",
+            "type": "tuple"
+          },
+          {
+            "internalType": "address[]",
+            "name": "signers",
+            "type": "address[]"
+          },
+          {
+            "internalType": "address[]",
+            "name": "transmitters",
+            "type": "address[]"
+          }
+        ],
+        "internalType": "struct MultiOCR3Base.OCRConfig",
+        "name": "ocrConfig",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint64",
+            "name": "sourceChainSelector",
+            "type": "uint64"
+          },
+          {
+            "components": [
+              {
+                "components": [
+                  {
+                    "internalType": "bytes32",
+                    "name": "messageId",
+                    "type": "bytes32"
+                  },
+                  {
+                    "internalType": "uint64",
+                    "name": "sourceChainSelector",
+                    "type": "uint64"
+                  },
+                  {
+                    "internalType": "uint64",
+                    "name": "destChainSelector",
+                    "type": "uint64"
+                  },
+                  {
+                    "internalType": "uint64",
+                    "name": "sequenceNumber",
+                    "type": "uint64"
+                  },
+                  {
+                    "internalType": "uint64",
+                    "name": "nonce",
+                    "type": "uint64"
+                  }
+                ],
+                "internalType": "struct Internal.RampMessageHeader",
+                "name": "header",
+                "type": "tuple"
+              },
+              {
+                "internalType": "bytes",
+                "name": "sender",
+                "type": "bytes"
+              },
+              {
+                "internalType": "bytes",
+                "name": "data",
+                "type": "bytes"
+              },
+              {
+                "internalType": "address",
+                "name": "receiver",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "gasLimit",
+                "type": "uint256"
+              },
+              {
+                "components": [
+                  {
+                    "internalType": "bytes",
+                    "name": "sourcePoolAddress",
+                    "type": "bytes"
+                  },
+                  {
+                    "internalType": "address",
+                    "name": "destTokenAddress",
+                    "type": "address"
+                  },
+                  {
+                    "internalType": "uint32",
+                    "name": "destGasAmount",
+                    "type": "uint32"
+                  },
+                  {
+                    "internalType": "bytes",
+                    "name": "extraData",
+                    "type": "bytes"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "amount",
+                    "type": "uint256"
+                  }
+                ],
+                "internalType": "struct Internal.Any2EVMTokenTransfer[]",
+                "name": "tokenAmounts",
+                "type": "tuple[]"
+              }
+            ],
+            "internalType": "struct Internal.Any2EVMRampMessage[]",
+            "name": "messages",
+            "type": "tuple[]"
+          },
+          {
+            "internalType": "bytes[][]",
+            "name": "offchainTokenData",
+            "type": "bytes[][]"
+          },
+          {
+            "internalType": "bytes32[]",
+            "name": "proofs",
+            "type": "bytes32[]"
+          },
+          {
+            "internalType": "uint256",
+            "name": "proofFlagBits",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct Internal.ExecutionReportSingleChain[]",
+        "name": "reports",
+        "type": "tuple[]"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "receiverExecutionGasLimit",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint32[]",
+            "name": "tokenGasOverrides",
+            "type": "uint32[]"
+          }
+        ],
+        "internalType": "struct OffRamp.GasLimitOverride[][]",
+        "name": "gasLimitOverrides",
+        "type": "tuple[][]"
+      }
+    ],
+    "name": "manuallyExecute",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "owner",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "feeQuoter",
+            "type": "address"
+          },
+          {
+            "internalType": "uint32",
+            "name": "permissionLessExecutionThresholdSeconds",
+            "type": "uint32"
+          },
+          {
+            "internalType": "address",
+            "name": "messageInterceptor",
+            "type": "address"
+          }
+        ],
+        "internalType": "struct OffRamp.DynamicConfig",
+        "name": "dynamicConfig",
+        "type": "tuple"
+      }
+    ],
+    "name": "setDynamicConfig",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "bytes32",
+            "name": "configDigest",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "uint8",
+            "name": "ocrPluginType",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "F",
+            "type": "uint8"
+          },
+          {
+            "internalType": "bool",
+            "name": "isSignatureVerificationEnabled",
+            "type": "bool"
+          },
+          {
+            "internalType": "address[]",
+            "name": "signers",
+            "type": "address[]"
+          },
+          {
+            "internalType": "address[]",
+            "name": "transmitters",
+            "type": "address[]"
+          }
+        ],
+        "internalType": "struct MultiOCR3Base.OCRConfigArgs[]",
+        "name": "ocrConfigArgs",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "setOCR3Configs",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      }
+    ],
+    "name": "transferOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "typeAndVersion",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]

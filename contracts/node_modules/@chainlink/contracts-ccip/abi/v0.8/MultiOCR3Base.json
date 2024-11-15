@@ -1,0 +1,351 @@
+[
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "expected",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "actual",
+        "type": "bytes32"
+      }
+    ],
+    "name": "ConfigDigestMismatch",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "expected",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "actual",
+        "type": "uint256"
+      }
+    ],
+    "name": "ForkedChain",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "enum MultiOCR3Base.InvalidConfigErrorType",
+        "name": "errorType",
+        "type": "uint8"
+      }
+    ],
+    "name": "InvalidConfig",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NonUniqueSignatures",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "OracleCannotBeZeroAddress",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "SignaturesOutOfRegistration",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint8",
+        "name": "ocrPluginType",
+        "type": "uint8"
+      }
+    ],
+    "name": "StaticConfigCannotBeChanged",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "UnauthorizedSigner",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "UnauthorizedTransmitter",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "expected",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "actual",
+        "type": "uint256"
+      }
+    ],
+    "name": "WrongMessageLength",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "WrongNumberOfSignatures",
+    "type": "error"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint8",
+        "name": "ocrPluginType",
+        "type": "uint8"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes32",
+        "name": "configDigest",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
+        "internalType": "address[]",
+        "name": "signers",
+        "type": "address[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "address[]",
+        "name": "transmitters",
+        "type": "address[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint8",
+        "name": "F",
+        "type": "uint8"
+      }
+    ],
+    "name": "ConfigSet",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      }
+    ],
+    "name": "OwnershipTransferRequested",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      }
+    ],
+    "name": "OwnershipTransferred",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint8",
+        "name": "ocrPluginType",
+        "type": "uint8"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes32",
+        "name": "configDigest",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint64",
+        "name": "sequenceNumber",
+        "type": "uint64"
+      }
+    ],
+    "name": "Transmitted",
+    "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "acceptOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint8",
+        "name": "ocrPluginType",
+        "type": "uint8"
+      }
+    ],
+    "name": "latestConfigDetails",
+    "outputs": [
+      {
+        "components": [
+          {
+            "components": [
+              {
+                "internalType": "bytes32",
+                "name": "configDigest",
+                "type": "bytes32"
+              },
+              {
+                "internalType": "uint8",
+                "name": "F",
+                "type": "uint8"
+              },
+              {
+                "internalType": "uint8",
+                "name": "n",
+                "type": "uint8"
+              },
+              {
+                "internalType": "bool",
+                "name": "isSignatureVerificationEnabled",
+                "type": "bool"
+              }
+            ],
+            "internalType": "struct MultiOCR3Base.ConfigInfo",
+            "name": "configInfo",
+            "type": "tuple"
+          },
+          {
+            "internalType": "address[]",
+            "name": "signers",
+            "type": "address[]"
+          },
+          {
+            "internalType": "address[]",
+            "name": "transmitters",
+            "type": "address[]"
+          }
+        ],
+        "internalType": "struct MultiOCR3Base.OCRConfig",
+        "name": "ocrConfig",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "owner",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "bytes32",
+            "name": "configDigest",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "uint8",
+            "name": "ocrPluginType",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "F",
+            "type": "uint8"
+          },
+          {
+            "internalType": "bool",
+            "name": "isSignatureVerificationEnabled",
+            "type": "bool"
+          },
+          {
+            "internalType": "address[]",
+            "name": "signers",
+            "type": "address[]"
+          },
+          {
+            "internalType": "address[]",
+            "name": "transmitters",
+            "type": "address[]"
+          }
+        ],
+        "internalType": "struct MultiOCR3Base.OCRConfigArgs[]",
+        "name": "ocrConfigArgs",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "setOCR3Configs",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      }
+    ],
+    "name": "transferOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "typeAndVersion",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "pure",
+    "type": "function"
+  }
+]

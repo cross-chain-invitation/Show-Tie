@@ -1,0 +1,407 @@
+[
+  {
+    "inputs": [
+      {
+        "internalType": "address[]",
+        "name": "authorizedCallers",
+        "type": "address[]"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "inputs": [],
+    "name": "PreviousRampAlreadySet",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "caller",
+        "type": "address"
+      }
+    ],
+    "name": "UnauthorizedCaller",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ZeroAddressNotAllowed",
+    "type": "error"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "caller",
+        "type": "address"
+      }
+    ],
+    "name": "AuthorizedCallerAdded",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "caller",
+        "type": "address"
+      }
+    ],
+    "name": "AuthorizedCallerRemoved",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      }
+    ],
+    "name": "OwnershipTransferRequested",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      }
+    ],
+    "name": "OwnershipTransferred",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint64",
+        "name": "remoteChainSelector",
+        "type": "uint64"
+      },
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "prevOnRamp",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "prevOffRamp",
+            "type": "address"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct NonceManager.PreviousRamps",
+        "name": "prevRamp",
+        "type": "tuple"
+      }
+    ],
+    "name": "PreviousRampsUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint64",
+        "name": "sourceChainSelector",
+        "type": "uint64"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint64",
+        "name": "nonce",
+        "type": "uint64"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes",
+        "name": "sender",
+        "type": "bytes"
+      }
+    ],
+    "name": "SkippedIncorrectNonce",
+    "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "acceptOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "address[]",
+            "name": "addedCallers",
+            "type": "address[]"
+          },
+          {
+            "internalType": "address[]",
+            "name": "removedCallers",
+            "type": "address[]"
+          }
+        ],
+        "internalType": "struct AuthorizedCallers.AuthorizedCallerArgs",
+        "name": "authorizedCallerArgs",
+        "type": "tuple"
+      }
+    ],
+    "name": "applyAuthorizedCallerUpdates",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint64",
+            "name": "remoteChainSelector",
+            "type": "uint64"
+          },
+          {
+            "components": [
+              {
+                "internalType": "address",
+                "name": "prevOnRamp",
+                "type": "address"
+              },
+              {
+                "internalType": "address",
+                "name": "prevOffRamp",
+                "type": "address"
+              }
+            ],
+            "internalType": "struct NonceManager.PreviousRamps",
+            "name": "prevRamps",
+            "type": "tuple"
+          }
+        ],
+        "internalType": "struct NonceManager.PreviousRampsArgs[]",
+        "name": "previousRampsArgs",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "applyPreviousRampsUpdates",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getAllAuthorizedCallers",
+    "outputs": [
+      {
+        "internalType": "address[]",
+        "name": "",
+        "type": "address[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint64",
+        "name": "sourceChainSelector",
+        "type": "uint64"
+      },
+      {
+        "internalType": "bytes",
+        "name": "sender",
+        "type": "bytes"
+      }
+    ],
+    "name": "getInboundNonce",
+    "outputs": [
+      {
+        "internalType": "uint64",
+        "name": "",
+        "type": "uint64"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint64",
+        "name": "destChainSelector",
+        "type": "uint64"
+      },
+      {
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"
+      }
+    ],
+    "name": "getIncrementedOutboundNonce",
+    "outputs": [
+      {
+        "internalType": "uint64",
+        "name": "",
+        "type": "uint64"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint64",
+        "name": "destChainSelector",
+        "type": "uint64"
+      },
+      {
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"
+      }
+    ],
+    "name": "getOutboundNonce",
+    "outputs": [
+      {
+        "internalType": "uint64",
+        "name": "",
+        "type": "uint64"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint64",
+        "name": "chainSelector",
+        "type": "uint64"
+      }
+    ],
+    "name": "getPreviousRamps",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "prevOnRamp",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "prevOffRamp",
+            "type": "address"
+          }
+        ],
+        "internalType": "struct NonceManager.PreviousRamps",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint64",
+        "name": "sourceChainSelector",
+        "type": "uint64"
+      },
+      {
+        "internalType": "uint64",
+        "name": "expectedNonce",
+        "type": "uint64"
+      },
+      {
+        "internalType": "bytes",
+        "name": "sender",
+        "type": "bytes"
+      }
+    ],
+    "name": "incrementInboundNonce",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "owner",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      }
+    ],
+    "name": "transferOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "typeAndVersion",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]

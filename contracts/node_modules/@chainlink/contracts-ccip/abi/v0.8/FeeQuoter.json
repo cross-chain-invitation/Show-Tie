@@ -1,0 +1,2070 @@
+[
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint96",
+            "name": "maxFeeJuelsPerMsg",
+            "type": "uint96"
+          },
+          {
+            "internalType": "address",
+            "name": "linkToken",
+            "type": "address"
+          },
+          {
+            "internalType": "uint32",
+            "name": "stalenessThreshold",
+            "type": "uint32"
+          }
+        ],
+        "internalType": "struct FeeQuoter.StaticConfig",
+        "name": "staticConfig",
+        "type": "tuple"
+      },
+      {
+        "internalType": "address[]",
+        "name": "priceUpdaters",
+        "type": "address[]"
+      },
+      {
+        "internalType": "address[]",
+        "name": "feeTokens",
+        "type": "address[]"
+      },
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "sourceToken",
+            "type": "address"
+          },
+          {
+            "components": [
+              {
+                "internalType": "address",
+                "name": "dataFeedAddress",
+                "type": "address"
+              },
+              {
+                "internalType": "uint8",
+                "name": "tokenDecimals",
+                "type": "uint8"
+              }
+            ],
+            "internalType": "struct FeeQuoter.TokenPriceFeedConfig",
+            "name": "feedConfig",
+            "type": "tuple"
+          }
+        ],
+        "internalType": "struct FeeQuoter.TokenPriceFeedUpdate[]",
+        "name": "tokenPriceFeeds",
+        "type": "tuple[]"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint64",
+            "name": "destChainSelector",
+            "type": "uint64"
+          },
+          {
+            "components": [
+              {
+                "internalType": "address",
+                "name": "token",
+                "type": "address"
+              },
+              {
+                "components": [
+                  {
+                    "internalType": "uint32",
+                    "name": "minFeeUSDCents",
+                    "type": "uint32"
+                  },
+                  {
+                    "internalType": "uint32",
+                    "name": "maxFeeUSDCents",
+                    "type": "uint32"
+                  },
+                  {
+                    "internalType": "uint16",
+                    "name": "deciBps",
+                    "type": "uint16"
+                  },
+                  {
+                    "internalType": "uint32",
+                    "name": "destGasOverhead",
+                    "type": "uint32"
+                  },
+                  {
+                    "internalType": "uint32",
+                    "name": "destBytesOverhead",
+                    "type": "uint32"
+                  },
+                  {
+                    "internalType": "bool",
+                    "name": "isEnabled",
+                    "type": "bool"
+                  }
+                ],
+                "internalType": "struct FeeQuoter.TokenTransferFeeConfig",
+                "name": "tokenTransferFeeConfig",
+                "type": "tuple"
+              }
+            ],
+            "internalType": "struct FeeQuoter.TokenTransferFeeConfigSingleTokenArgs[]",
+            "name": "tokenTransferFeeConfigs",
+            "type": "tuple[]"
+          }
+        ],
+        "internalType": "struct FeeQuoter.TokenTransferFeeConfigArgs[]",
+        "name": "tokenTransferFeeConfigArgs",
+        "type": "tuple[]"
+      },
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "token",
+            "type": "address"
+          },
+          {
+            "internalType": "uint64",
+            "name": "premiumMultiplierWeiPerEth",
+            "type": "uint64"
+          }
+        ],
+        "internalType": "struct FeeQuoter.PremiumMultiplierWeiPerEthArgs[]",
+        "name": "premiumMultiplierWeiPerEthArgs",
+        "type": "tuple[]"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint64",
+            "name": "destChainSelector",
+            "type": "uint64"
+          },
+          {
+            "components": [
+              {
+                "internalType": "bool",
+                "name": "isEnabled",
+                "type": "bool"
+              },
+              {
+                "internalType": "uint16",
+                "name": "maxNumberOfTokensPerMsg",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint32",
+                "name": "maxDataBytes",
+                "type": "uint32"
+              },
+              {
+                "internalType": "uint32",
+                "name": "maxPerMsgGasLimit",
+                "type": "uint32"
+              },
+              {
+                "internalType": "uint32",
+                "name": "destGasOverhead",
+                "type": "uint32"
+              },
+              {
+                "internalType": "uint16",
+                "name": "destGasPerPayloadByte",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint32",
+                "name": "destDataAvailabilityOverheadGas",
+                "type": "uint32"
+              },
+              {
+                "internalType": "uint16",
+                "name": "destGasPerDataAvailabilityByte",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint16",
+                "name": "destDataAvailabilityMultiplierBps",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint16",
+                "name": "defaultTokenFeeUSDCents",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint32",
+                "name": "defaultTokenDestGasOverhead",
+                "type": "uint32"
+              },
+              {
+                "internalType": "uint32",
+                "name": "defaultTxGasLimit",
+                "type": "uint32"
+              },
+              {
+                "internalType": "uint64",
+                "name": "gasMultiplierWeiPerEth",
+                "type": "uint64"
+              },
+              {
+                "internalType": "uint32",
+                "name": "networkFeeUSDCents",
+                "type": "uint32"
+              },
+              {
+                "internalType": "bool",
+                "name": "enforceOutOfOrder",
+                "type": "bool"
+              },
+              {
+                "internalType": "bytes4",
+                "name": "chainFamilySelector",
+                "type": "bytes4"
+              }
+            ],
+            "internalType": "struct FeeQuoter.DestChainConfig",
+            "name": "destChainConfig",
+            "type": "tuple"
+          }
+        ],
+        "internalType": "struct FeeQuoter.DestChainConfigArgs[]",
+        "name": "destChainConfigArgs",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint64",
+        "name": "chain",
+        "type": "uint64"
+      }
+    ],
+    "name": "ChainNotSupported",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "DataFeedValueOutOfUint224Range",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint64",
+        "name": "destChainSelector",
+        "type": "uint64"
+      }
+    ],
+    "name": "DestinationChainNotEnabled",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ExtraArgOutOfOrderExecutionMustBeTrue",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      }
+    ],
+    "name": "FeeTokenNotSupported",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      },
+      {
+        "internalType": "uint32",
+        "name": "destBytesOverhead",
+        "type": "uint32"
+      }
+    ],
+    "name": "InvalidDestBytesOverhead",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint64",
+        "name": "destChainSelector",
+        "type": "uint64"
+      }
+    ],
+    "name": "InvalidDestChainConfig",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes",
+        "name": "encodedAddress",
+        "type": "bytes"
+      }
+    ],
+    "name": "InvalidEVMAddress",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidExtraArgsTag",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidStaticConfig",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "msgFeeJuels",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "maxFeeJuelsPerMsg",
+        "type": "uint256"
+      }
+    ],
+    "name": "MessageFeeTooHigh",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "MessageGasLimitTooHigh",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "maxSize",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "actualSize",
+        "type": "uint256"
+      }
+    ],
+    "name": "MessageTooLarge",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "forwarder",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "workflowOwner",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes10",
+        "name": "workflowName",
+        "type": "bytes10"
+      },
+      {
+        "internalType": "bytes2",
+        "name": "reportName",
+        "type": "bytes2"
+      }
+    ],
+    "name": "ReportForwarderUnauthorized",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      }
+    ],
+    "name": "SourceTokenDataTooLarge",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint64",
+        "name": "destChainSelector",
+        "type": "uint64"
+      },
+      {
+        "internalType": "uint256",
+        "name": "threshold",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "timePassed",
+        "type": "uint256"
+      }
+    ],
+    "name": "StaleGasPrice",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "feedTimestamp",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "storedTimeStamp",
+        "type": "uint256"
+      }
+    ],
+    "name": "StaleKeystoneUpdate",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      }
+    ],
+    "name": "TokenNotSupported",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "caller",
+        "type": "address"
+      }
+    ],
+    "name": "UnauthorizedCaller",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "UnsupportedNumberOfTokens",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ZeroAddressNotAllowed",
+    "type": "error"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "caller",
+        "type": "address"
+      }
+    ],
+    "name": "AuthorizedCallerAdded",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "caller",
+        "type": "address"
+      }
+    ],
+    "name": "AuthorizedCallerRemoved",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint64",
+        "name": "destChainSelector",
+        "type": "uint64"
+      },
+      {
+        "components": [
+          {
+            "internalType": "bool",
+            "name": "isEnabled",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint16",
+            "name": "maxNumberOfTokensPerMsg",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint32",
+            "name": "maxDataBytes",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "maxPerMsgGasLimit",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "destGasOverhead",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint16",
+            "name": "destGasPerPayloadByte",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint32",
+            "name": "destDataAvailabilityOverheadGas",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint16",
+            "name": "destGasPerDataAvailabilityByte",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "destDataAvailabilityMultiplierBps",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "defaultTokenFeeUSDCents",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint32",
+            "name": "defaultTokenDestGasOverhead",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "defaultTxGasLimit",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint64",
+            "name": "gasMultiplierWeiPerEth",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint32",
+            "name": "networkFeeUSDCents",
+            "type": "uint32"
+          },
+          {
+            "internalType": "bool",
+            "name": "enforceOutOfOrder",
+            "type": "bool"
+          },
+          {
+            "internalType": "bytes4",
+            "name": "chainFamilySelector",
+            "type": "bytes4"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct FeeQuoter.DestChainConfig",
+        "name": "destChainConfig",
+        "type": "tuple"
+      }
+    ],
+    "name": "DestChainAdded",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint64",
+        "name": "destChainSelector",
+        "type": "uint64"
+      },
+      {
+        "components": [
+          {
+            "internalType": "bool",
+            "name": "isEnabled",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint16",
+            "name": "maxNumberOfTokensPerMsg",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint32",
+            "name": "maxDataBytes",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "maxPerMsgGasLimit",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "destGasOverhead",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint16",
+            "name": "destGasPerPayloadByte",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint32",
+            "name": "destDataAvailabilityOverheadGas",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint16",
+            "name": "destGasPerDataAvailabilityByte",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "destDataAvailabilityMultiplierBps",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "defaultTokenFeeUSDCents",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint32",
+            "name": "defaultTokenDestGasOverhead",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "defaultTxGasLimit",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint64",
+            "name": "gasMultiplierWeiPerEth",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint32",
+            "name": "networkFeeUSDCents",
+            "type": "uint32"
+          },
+          {
+            "internalType": "bool",
+            "name": "enforceOutOfOrder",
+            "type": "bool"
+          },
+          {
+            "internalType": "bytes4",
+            "name": "chainFamilySelector",
+            "type": "bytes4"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct FeeQuoter.DestChainConfig",
+        "name": "destChainConfig",
+        "type": "tuple"
+      }
+    ],
+    "name": "DestChainConfigUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "feeToken",
+        "type": "address"
+      }
+    ],
+    "name": "FeeTokenAdded",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "feeToken",
+        "type": "address"
+      }
+    ],
+    "name": "FeeTokenRemoved",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      }
+    ],
+    "name": "OwnershipTransferRequested",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      }
+    ],
+    "name": "OwnershipTransferred",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint64",
+        "name": "premiumMultiplierWeiPerEth",
+        "type": "uint64"
+      }
+    ],
+    "name": "PremiumMultiplierWeiPerEthUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      },
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "dataFeedAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "uint8",
+            "name": "tokenDecimals",
+            "type": "uint8"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct FeeQuoter.TokenPriceFeedConfig",
+        "name": "priceFeedConfig",
+        "type": "tuple"
+      }
+    ],
+    "name": "PriceFeedPerTokenUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "reportId",
+        "type": "bytes32"
+      },
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "forwarder",
+            "type": "address"
+          },
+          {
+            "internalType": "bytes10",
+            "name": "workflowName",
+            "type": "bytes10"
+          },
+          {
+            "internalType": "bytes2",
+            "name": "reportName",
+            "type": "bytes2"
+          },
+          {
+            "internalType": "address",
+            "name": "workflowOwner",
+            "type": "address"
+          },
+          {
+            "internalType": "bool",
+            "name": "isAllowed",
+            "type": "bool"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct KeystoneFeedsPermissionHandler.Permission",
+        "name": "permission",
+        "type": "tuple"
+      }
+    ],
+    "name": "ReportPermissionSet",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint64",
+        "name": "destChainSelector",
+        "type": "uint64"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      }
+    ],
+    "name": "TokenTransferFeeConfigDeleted",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint64",
+        "name": "destChainSelector",
+        "type": "uint64"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint32",
+            "name": "minFeeUSDCents",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "maxFeeUSDCents",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint16",
+            "name": "deciBps",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint32",
+            "name": "destGasOverhead",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "destBytesOverhead",
+            "type": "uint32"
+          },
+          {
+            "internalType": "bool",
+            "name": "isEnabled",
+            "type": "bool"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct FeeQuoter.TokenTransferFeeConfig",
+        "name": "tokenTransferFeeConfig",
+        "type": "tuple"
+      }
+    ],
+    "name": "TokenTransferFeeConfigUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "value",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "timestamp",
+        "type": "uint256"
+      }
+    ],
+    "name": "UsdPerTokenUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint64",
+        "name": "destChain",
+        "type": "uint64"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "value",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "timestamp",
+        "type": "uint256"
+      }
+    ],
+    "name": "UsdPerUnitGasUpdated",
+    "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "FEE_BASE_DECIMALS",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "KEYSTONE_PRICE_DECIMALS",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "acceptOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "address[]",
+            "name": "addedCallers",
+            "type": "address[]"
+          },
+          {
+            "internalType": "address[]",
+            "name": "removedCallers",
+            "type": "address[]"
+          }
+        ],
+        "internalType": "struct AuthorizedCallers.AuthorizedCallerArgs",
+        "name": "authorizedCallerArgs",
+        "type": "tuple"
+      }
+    ],
+    "name": "applyAuthorizedCallerUpdates",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint64",
+            "name": "destChainSelector",
+            "type": "uint64"
+          },
+          {
+            "components": [
+              {
+                "internalType": "bool",
+                "name": "isEnabled",
+                "type": "bool"
+              },
+              {
+                "internalType": "uint16",
+                "name": "maxNumberOfTokensPerMsg",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint32",
+                "name": "maxDataBytes",
+                "type": "uint32"
+              },
+              {
+                "internalType": "uint32",
+                "name": "maxPerMsgGasLimit",
+                "type": "uint32"
+              },
+              {
+                "internalType": "uint32",
+                "name": "destGasOverhead",
+                "type": "uint32"
+              },
+              {
+                "internalType": "uint16",
+                "name": "destGasPerPayloadByte",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint32",
+                "name": "destDataAvailabilityOverheadGas",
+                "type": "uint32"
+              },
+              {
+                "internalType": "uint16",
+                "name": "destGasPerDataAvailabilityByte",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint16",
+                "name": "destDataAvailabilityMultiplierBps",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint16",
+                "name": "defaultTokenFeeUSDCents",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint32",
+                "name": "defaultTokenDestGasOverhead",
+                "type": "uint32"
+              },
+              {
+                "internalType": "uint32",
+                "name": "defaultTxGasLimit",
+                "type": "uint32"
+              },
+              {
+                "internalType": "uint64",
+                "name": "gasMultiplierWeiPerEth",
+                "type": "uint64"
+              },
+              {
+                "internalType": "uint32",
+                "name": "networkFeeUSDCents",
+                "type": "uint32"
+              },
+              {
+                "internalType": "bool",
+                "name": "enforceOutOfOrder",
+                "type": "bool"
+              },
+              {
+                "internalType": "bytes4",
+                "name": "chainFamilySelector",
+                "type": "bytes4"
+              }
+            ],
+            "internalType": "struct FeeQuoter.DestChainConfig",
+            "name": "destChainConfig",
+            "type": "tuple"
+          }
+        ],
+        "internalType": "struct FeeQuoter.DestChainConfigArgs[]",
+        "name": "destChainConfigArgs",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "applyDestChainConfigUpdates",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address[]",
+        "name": "feeTokensToAdd",
+        "type": "address[]"
+      },
+      {
+        "internalType": "address[]",
+        "name": "feeTokensToRemove",
+        "type": "address[]"
+      }
+    ],
+    "name": "applyFeeTokensUpdates",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "token",
+            "type": "address"
+          },
+          {
+            "internalType": "uint64",
+            "name": "premiumMultiplierWeiPerEth",
+            "type": "uint64"
+          }
+        ],
+        "internalType": "struct FeeQuoter.PremiumMultiplierWeiPerEthArgs[]",
+        "name": "premiumMultiplierWeiPerEthArgs",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "applyPremiumMultiplierWeiPerEthUpdates",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint64",
+            "name": "destChainSelector",
+            "type": "uint64"
+          },
+          {
+            "components": [
+              {
+                "internalType": "address",
+                "name": "token",
+                "type": "address"
+              },
+              {
+                "components": [
+                  {
+                    "internalType": "uint32",
+                    "name": "minFeeUSDCents",
+                    "type": "uint32"
+                  },
+                  {
+                    "internalType": "uint32",
+                    "name": "maxFeeUSDCents",
+                    "type": "uint32"
+                  },
+                  {
+                    "internalType": "uint16",
+                    "name": "deciBps",
+                    "type": "uint16"
+                  },
+                  {
+                    "internalType": "uint32",
+                    "name": "destGasOverhead",
+                    "type": "uint32"
+                  },
+                  {
+                    "internalType": "uint32",
+                    "name": "destBytesOverhead",
+                    "type": "uint32"
+                  },
+                  {
+                    "internalType": "bool",
+                    "name": "isEnabled",
+                    "type": "bool"
+                  }
+                ],
+                "internalType": "struct FeeQuoter.TokenTransferFeeConfig",
+                "name": "tokenTransferFeeConfig",
+                "type": "tuple"
+              }
+            ],
+            "internalType": "struct FeeQuoter.TokenTransferFeeConfigSingleTokenArgs[]",
+            "name": "tokenTransferFeeConfigs",
+            "type": "tuple[]"
+          }
+        ],
+        "internalType": "struct FeeQuoter.TokenTransferFeeConfigArgs[]",
+        "name": "tokenTransferFeeConfigArgs",
+        "type": "tuple[]"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint64",
+            "name": "destChainSelector",
+            "type": "uint64"
+          },
+          {
+            "internalType": "address",
+            "name": "token",
+            "type": "address"
+          }
+        ],
+        "internalType": "struct FeeQuoter.TokenTransferFeeConfigRemoveArgs[]",
+        "name": "tokensToUseDefaultFeeConfigs",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "applyTokenTransferFeeConfigUpdates",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "fromToken",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "fromTokenAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "toToken",
+        "type": "address"
+      }
+    ],
+    "name": "convertTokenAmount",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getAllAuthorizedCallers",
+    "outputs": [
+      {
+        "internalType": "address[]",
+        "name": "",
+        "type": "address[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint64",
+        "name": "destChainSelector",
+        "type": "uint64"
+      }
+    ],
+    "name": "getDestChainConfig",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "bool",
+            "name": "isEnabled",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint16",
+            "name": "maxNumberOfTokensPerMsg",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint32",
+            "name": "maxDataBytes",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "maxPerMsgGasLimit",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "destGasOverhead",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint16",
+            "name": "destGasPerPayloadByte",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint32",
+            "name": "destDataAvailabilityOverheadGas",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint16",
+            "name": "destGasPerDataAvailabilityByte",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "destDataAvailabilityMultiplierBps",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "defaultTokenFeeUSDCents",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint32",
+            "name": "defaultTokenDestGasOverhead",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "defaultTxGasLimit",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint64",
+            "name": "gasMultiplierWeiPerEth",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint32",
+            "name": "networkFeeUSDCents",
+            "type": "uint32"
+          },
+          {
+            "internalType": "bool",
+            "name": "enforceOutOfOrder",
+            "type": "bool"
+          },
+          {
+            "internalType": "bytes4",
+            "name": "chainFamilySelector",
+            "type": "bytes4"
+          }
+        ],
+        "internalType": "struct FeeQuoter.DestChainConfig",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint64",
+        "name": "destChainSelector",
+        "type": "uint64"
+      }
+    ],
+    "name": "getDestinationChainGasPrice",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint224",
+            "name": "value",
+            "type": "uint224"
+          },
+          {
+            "internalType": "uint32",
+            "name": "timestamp",
+            "type": "uint32"
+          }
+        ],
+        "internalType": "struct Internal.TimestampedPackedUint224",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getFeeTokens",
+    "outputs": [
+      {
+        "internalType": "address[]",
+        "name": "",
+        "type": "address[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      }
+    ],
+    "name": "getPremiumMultiplierWeiPerEth",
+    "outputs": [
+      {
+        "internalType": "uint64",
+        "name": "premiumMultiplierWeiPerEth",
+        "type": "uint64"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getStaticConfig",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint96",
+            "name": "maxFeeJuelsPerMsg",
+            "type": "uint96"
+          },
+          {
+            "internalType": "address",
+            "name": "linkToken",
+            "type": "address"
+          },
+          {
+            "internalType": "uint32",
+            "name": "stalenessThreshold",
+            "type": "uint32"
+          }
+        ],
+        "internalType": "struct FeeQuoter.StaticConfig",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      },
+      {
+        "internalType": "uint64",
+        "name": "destChainSelector",
+        "type": "uint64"
+      }
+    ],
+    "name": "getTokenAndGasPrices",
+    "outputs": [
+      {
+        "internalType": "uint224",
+        "name": "tokenPrice",
+        "type": "uint224"
+      },
+      {
+        "internalType": "uint224",
+        "name": "gasPriceValue",
+        "type": "uint224"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      }
+    ],
+    "name": "getTokenPrice",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint224",
+            "name": "value",
+            "type": "uint224"
+          },
+          {
+            "internalType": "uint32",
+            "name": "timestamp",
+            "type": "uint32"
+          }
+        ],
+        "internalType": "struct Internal.TimestampedPackedUint224",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      }
+    ],
+    "name": "getTokenPriceFeedConfig",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "dataFeedAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "uint8",
+            "name": "tokenDecimals",
+            "type": "uint8"
+          }
+        ],
+        "internalType": "struct FeeQuoter.TokenPriceFeedConfig",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address[]",
+        "name": "tokens",
+        "type": "address[]"
+      }
+    ],
+    "name": "getTokenPrices",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint224",
+            "name": "value",
+            "type": "uint224"
+          },
+          {
+            "internalType": "uint32",
+            "name": "timestamp",
+            "type": "uint32"
+          }
+        ],
+        "internalType": "struct Internal.TimestampedPackedUint224[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint64",
+        "name": "destChainSelector",
+        "type": "uint64"
+      },
+      {
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      }
+    ],
+    "name": "getTokenTransferFeeConfig",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint32",
+            "name": "minFeeUSDCents",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "maxFeeUSDCents",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint16",
+            "name": "deciBps",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint32",
+            "name": "destGasOverhead",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "destBytesOverhead",
+            "type": "uint32"
+          },
+          {
+            "internalType": "bool",
+            "name": "isEnabled",
+            "type": "bool"
+          }
+        ],
+        "internalType": "struct FeeQuoter.TokenTransferFeeConfig",
+        "name": "tokenTransferFeeConfig",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint64",
+        "name": "destChainSelector",
+        "type": "uint64"
+      },
+      {
+        "components": [
+          {
+            "internalType": "bytes",
+            "name": "receiver",
+            "type": "bytes"
+          },
+          {
+            "internalType": "bytes",
+            "name": "data",
+            "type": "bytes"
+          },
+          {
+            "components": [
+              {
+                "internalType": "address",
+                "name": "token",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct Client.EVMTokenAmount[]",
+            "name": "tokenAmounts",
+            "type": "tuple[]"
+          },
+          {
+            "internalType": "address",
+            "name": "feeToken",
+            "type": "address"
+          },
+          {
+            "internalType": "bytes",
+            "name": "extraArgs",
+            "type": "bytes"
+          }
+        ],
+        "internalType": "struct Client.EVM2AnyMessage",
+        "name": "message",
+        "type": "tuple"
+      }
+    ],
+    "name": "getValidatedFee",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "feeTokenAmount",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      }
+    ],
+    "name": "getValidatedTokenPrice",
+    "outputs": [
+      {
+        "internalType": "uint224",
+        "name": "",
+        "type": "uint224"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes",
+        "name": "metadata",
+        "type": "bytes"
+      },
+      {
+        "internalType": "bytes",
+        "name": "report",
+        "type": "bytes"
+      }
+    ],
+    "name": "onReport",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "owner",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint64",
+        "name": "destChainSelector",
+        "type": "uint64"
+      },
+      {
+        "internalType": "address",
+        "name": "feeToken",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "feeTokenAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bytes",
+        "name": "extraArgs",
+        "type": "bytes"
+      },
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "sourcePoolAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "bytes",
+            "name": "destTokenAddress",
+            "type": "bytes"
+          },
+          {
+            "internalType": "bytes",
+            "name": "extraData",
+            "type": "bytes"
+          },
+          {
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bytes",
+            "name": "destExecData",
+            "type": "bytes"
+          }
+        ],
+        "internalType": "struct Internal.EVM2AnyTokenTransfer[]",
+        "name": "onRampTokenTransfers",
+        "type": "tuple[]"
+      },
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "token",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct Client.EVMTokenAmount[]",
+        "name": "sourceTokenAmounts",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "processMessageArgs",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "msgFeeJuels",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bool",
+        "name": "isOutOfOrderExecution",
+        "type": "bool"
+      },
+      {
+        "internalType": "bytes",
+        "name": "convertedExtraArgs",
+        "type": "bytes"
+      },
+      {
+        "internalType": "bytes[]",
+        "name": "destExecDataPerToken",
+        "type": "bytes[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "forwarder",
+            "type": "address"
+          },
+          {
+            "internalType": "bytes10",
+            "name": "workflowName",
+            "type": "bytes10"
+          },
+          {
+            "internalType": "bytes2",
+            "name": "reportName",
+            "type": "bytes2"
+          },
+          {
+            "internalType": "address",
+            "name": "workflowOwner",
+            "type": "address"
+          },
+          {
+            "internalType": "bool",
+            "name": "isAllowed",
+            "type": "bool"
+          }
+        ],
+        "internalType": "struct KeystoneFeedsPermissionHandler.Permission[]",
+        "name": "permissions",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "setReportPermissions",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      }
+    ],
+    "name": "transferOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "typeAndVersion",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "components": [
+              {
+                "internalType": "address",
+                "name": "sourceToken",
+                "type": "address"
+              },
+              {
+                "internalType": "uint224",
+                "name": "usdPerToken",
+                "type": "uint224"
+              }
+            ],
+            "internalType": "struct Internal.TokenPriceUpdate[]",
+            "name": "tokenPriceUpdates",
+            "type": "tuple[]"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint64",
+                "name": "destChainSelector",
+                "type": "uint64"
+              },
+              {
+                "internalType": "uint224",
+                "name": "usdPerUnitGas",
+                "type": "uint224"
+              }
+            ],
+            "internalType": "struct Internal.GasPriceUpdate[]",
+            "name": "gasPriceUpdates",
+            "type": "tuple[]"
+          }
+        ],
+        "internalType": "struct Internal.PriceUpdates",
+        "name": "priceUpdates",
+        "type": "tuple"
+      }
+    ],
+    "name": "updatePrices",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "sourceToken",
+            "type": "address"
+          },
+          {
+            "components": [
+              {
+                "internalType": "address",
+                "name": "dataFeedAddress",
+                "type": "address"
+              },
+              {
+                "internalType": "uint8",
+                "name": "tokenDecimals",
+                "type": "uint8"
+              }
+            ],
+            "internalType": "struct FeeQuoter.TokenPriceFeedConfig",
+            "name": "feedConfig",
+            "type": "tuple"
+          }
+        ],
+        "internalType": "struct FeeQuoter.TokenPriceFeedUpdate[]",
+        "name": "tokenPriceFeedUpdates",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "updateTokenPriceFeeds",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]

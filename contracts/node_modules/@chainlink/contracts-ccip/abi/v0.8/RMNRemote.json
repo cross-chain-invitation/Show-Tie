@@ -1,0 +1,517 @@
+[
+  {
+    "inputs": [
+      {
+        "internalType": "uint64",
+        "name": "localChainSelector",
+        "type": "uint64"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes16",
+        "name": "subject",
+        "type": "bytes16"
+      }
+    ],
+    "name": "AlreadyCursed",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ConfigNotSet",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "DuplicateOnchainPublicKey",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidSignature",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidSignerOrder",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "MinSignersTooHigh",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes16",
+        "name": "subject",
+        "type": "bytes16"
+      }
+    ],
+    "name": "NotCursed",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "OutOfOrderSignatures",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ThresholdNotMet",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "UnexpectedSigner",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ZeroValueNotAllowed",
+    "type": "error"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint32",
+        "name": "version",
+        "type": "uint32"
+      },
+      {
+        "components": [
+          {
+            "internalType": "bytes32",
+            "name": "rmnHomeContractConfigDigest",
+            "type": "bytes32"
+          },
+          {
+            "components": [
+              {
+                "internalType": "address",
+                "name": "onchainPublicKey",
+                "type": "address"
+              },
+              {
+                "internalType": "uint64",
+                "name": "nodeIndex",
+                "type": "uint64"
+              }
+            ],
+            "internalType": "struct RMNRemote.Signer[]",
+            "name": "signers",
+            "type": "tuple[]"
+          },
+          {
+            "internalType": "uint64",
+            "name": "minSigners",
+            "type": "uint64"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct RMNRemote.Config",
+        "name": "config",
+        "type": "tuple"
+      }
+    ],
+    "name": "ConfigSet",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "bytes16[]",
+        "name": "subjects",
+        "type": "bytes16[]"
+      }
+    ],
+    "name": "Cursed",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      }
+    ],
+    "name": "OwnershipTransferRequested",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      }
+    ],
+    "name": "OwnershipTransferred",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "bytes16[]",
+        "name": "subjects",
+        "type": "bytes16[]"
+      }
+    ],
+    "name": "Uncursed",
+    "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "acceptOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes16",
+        "name": "subject",
+        "type": "bytes16"
+      }
+    ],
+    "name": "curse",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes16[]",
+        "name": "subjects",
+        "type": "bytes16[]"
+      }
+    ],
+    "name": "curse",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getCursedSubjects",
+    "outputs": [
+      {
+        "internalType": "bytes16[]",
+        "name": "subjects",
+        "type": "bytes16[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getLocalChainSelector",
+    "outputs": [
+      {
+        "internalType": "uint64",
+        "name": "localChainSelector",
+        "type": "uint64"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getReportDigestHeader",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "digestHeader",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getVersionedConfig",
+    "outputs": [
+      {
+        "internalType": "uint32",
+        "name": "version",
+        "type": "uint32"
+      },
+      {
+        "components": [
+          {
+            "internalType": "bytes32",
+            "name": "rmnHomeContractConfigDigest",
+            "type": "bytes32"
+          },
+          {
+            "components": [
+              {
+                "internalType": "address",
+                "name": "onchainPublicKey",
+                "type": "address"
+              },
+              {
+                "internalType": "uint64",
+                "name": "nodeIndex",
+                "type": "uint64"
+              }
+            ],
+            "internalType": "struct RMNRemote.Signer[]",
+            "name": "signers",
+            "type": "tuple[]"
+          },
+          {
+            "internalType": "uint64",
+            "name": "minSigners",
+            "type": "uint64"
+          }
+        ],
+        "internalType": "struct RMNRemote.Config",
+        "name": "config",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes16",
+        "name": "subject",
+        "type": "bytes16"
+      }
+    ],
+    "name": "isCursed",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "isCursed",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "owner",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "bytes32",
+            "name": "rmnHomeContractConfigDigest",
+            "type": "bytes32"
+          },
+          {
+            "components": [
+              {
+                "internalType": "address",
+                "name": "onchainPublicKey",
+                "type": "address"
+              },
+              {
+                "internalType": "uint64",
+                "name": "nodeIndex",
+                "type": "uint64"
+              }
+            ],
+            "internalType": "struct RMNRemote.Signer[]",
+            "name": "signers",
+            "type": "tuple[]"
+          },
+          {
+            "internalType": "uint64",
+            "name": "minSigners",
+            "type": "uint64"
+          }
+        ],
+        "internalType": "struct RMNRemote.Config",
+        "name": "newConfig",
+        "type": "tuple"
+      }
+    ],
+    "name": "setConfig",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      }
+    ],
+    "name": "transferOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "typeAndVersion",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes16",
+        "name": "subject",
+        "type": "bytes16"
+      }
+    ],
+    "name": "uncurse",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes16[]",
+        "name": "subjects",
+        "type": "bytes16[]"
+      }
+    ],
+    "name": "uncurse",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "offrampAddress",
+        "type": "address"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint64",
+            "name": "sourceChainSelector",
+            "type": "uint64"
+          },
+          {
+            "internalType": "bytes",
+            "name": "onRampAddress",
+            "type": "bytes"
+          },
+          {
+            "internalType": "uint64",
+            "name": "minSeqNr",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "maxSeqNr",
+            "type": "uint64"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "merkleRoot",
+            "type": "bytes32"
+          }
+        ],
+        "internalType": "struct Internal.MerkleRoot[]",
+        "name": "merkleRoots",
+        "type": "tuple[]"
+      },
+      {
+        "components": [
+          {
+            "internalType": "bytes32",
+            "name": "r",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "s",
+            "type": "bytes32"
+          }
+        ],
+        "internalType": "struct IRMNRemote.Signature[]",
+        "name": "signatures",
+        "type": "tuple[]"
+      },
+      {
+        "internalType": "uint256",
+        "name": "rawVs",
+        "type": "uint256"
+      }
+    ],
+    "name": "verify",
+    "outputs": [],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]

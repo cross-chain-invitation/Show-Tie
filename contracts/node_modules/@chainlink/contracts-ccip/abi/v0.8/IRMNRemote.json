@@ -1,0 +1,114 @@
+[
+  {
+    "inputs": [],
+    "name": "getCursedSubjects",
+    "outputs": [
+      {
+        "internalType": "bytes16[]",
+        "name": "subjects",
+        "type": "bytes16[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes16",
+        "name": "subject",
+        "type": "bytes16"
+      }
+    ],
+    "name": "isCursed",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "isCursed",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "offRampAddress",
+        "type": "address"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint64",
+            "name": "sourceChainSelector",
+            "type": "uint64"
+          },
+          {
+            "internalType": "bytes",
+            "name": "onRampAddress",
+            "type": "bytes"
+          },
+          {
+            "internalType": "uint64",
+            "name": "minSeqNr",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "maxSeqNr",
+            "type": "uint64"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "merkleRoot",
+            "type": "bytes32"
+          }
+        ],
+        "internalType": "struct Internal.MerkleRoot[]",
+        "name": "merkleRoots",
+        "type": "tuple[]"
+      },
+      {
+        "components": [
+          {
+            "internalType": "bytes32",
+            "name": "r",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "s",
+            "type": "bytes32"
+          }
+        ],
+        "internalType": "struct IRMNRemote.Signature[]",
+        "name": "signatures",
+        "type": "tuple[]"
+      },
+      {
+        "internalType": "uint256",
+        "name": "rawVs",
+        "type": "uint256"
+      }
+    ],
+    "name": "verify",
+    "outputs": [],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]

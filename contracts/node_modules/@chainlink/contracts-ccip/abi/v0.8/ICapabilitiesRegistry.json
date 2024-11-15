@@ -1,0 +1,58 @@
+[
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "p2pId",
+        "type": "bytes32"
+      }
+    ],
+    "name": "getNode",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint32",
+            "name": "nodeOperatorId",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "configCount",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "workflowDONId",
+            "type": "uint32"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "signer",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "p2pId",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "bytes32[]",
+            "name": "hashedCapabilityIds",
+            "type": "bytes32[]"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "capabilitiesDONIds",
+            "type": "uint256[]"
+          }
+        ],
+        "internalType": "struct ICapabilitiesRegistry.NodeInfo",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]
