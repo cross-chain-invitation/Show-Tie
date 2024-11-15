@@ -1,0 +1,17 @@
+[
+  {
+    "name": "Base Sepolia",
+    "chainId": 84532,
+    "chainSelectorId": "10344971235874465080"
+  },
+  {
+    "name": "Linea Sepolia",
+    "chainId": 59141,
+    "chainSelectorId": "5719461335882077547"
+  },
+  {
+    "name": "Sepolia",
+    "chainId": 11155111,
+    "chainSelectorId": "16015286601757825753"
+  }
+]
