@@ -22,17 +22,19 @@ contract Showtie is OwnerIsCreator, CCIPReceiver {
     LinkTokenInterface private s_linkToken;
 
     mapping(bytes32 => uint64) public crossChainAttestationIds;
+    mapping(bytes => bool) public isSignatureUsed;
+    mapping(address => bool) public isInvited;
 
     event InvitationCreated(bytes32 ccipMessageId);
     event CrossChainAttestationCreated();
     event InviteeAttestationCreated();
+    // The chain selector of the destination chain.
+    // The address of the receiver on the destination chain.
+    // the token address used to pay CCIP fees.
+    // The Dapps ID
+    // The address of the inviter,
+    // The fees paid for sending the CCIP message.
     event CCIPMessageSent( // The unique ID of the CCIP message.
-        // The chain selector of the destination chain.
-        // The address of the receiver on the destination chain.
-        // the token address used to pay CCIP fees.
-        // The Dapps ID
-        // The address of the inviter,
-        // The fees paid for sending the CCIP message.
         bytes32 indexed messageId,
         uint64 indexed destinationChainSelector,
         address receiver,
@@ -114,8 +116,13 @@ contract Showtie is OwnerIsCreator, CCIPReceiver {
         );
     }
 
-    function approveInvitation(bytes memory captchaSignature) external {
-        // TODO : Verify the CAPTCHA signature
+    function approveInvitation(uint256 dappsId, address invitor, bytes memory captchaSignature) external {
+        require(isInvited[msg.sender] == false, "Already invited");
+        require(isSignatureUsed[captchaSignature] == false, "Signature already used");
+        require(
+            _verifyECDSASignature(captchaSigner, keccak256(abi.encodePacked(dappsId, msg.sender)), captchaSignature)
+        );
+
         // TODO : Create Invitee Attestation
         // TODO : Emit Event
     }
@@ -124,11 +131,6 @@ contract Showtie is OwnerIsCreator, CCIPReceiver {
         bytes32 key = keccak256(abi.encodePacked(inviterAddress, dappsId));
         return crossChainAttestationIds[key];
     }
-
-    // Use for verify inviter's signature is actually signed by inviter
-    function verifySignature(address signer, bytes memory signature) internal view returns (bool) {}
-
-    function verifyCaptchaSignature(address invitee, bytes memory signature) internal pure returns (bool) {}
 
     // Use it only for test
     function getLastReceivedText() external view returns (string memory) {
