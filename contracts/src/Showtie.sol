@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
+import {OwnerIsCreator} from "@chainlink/contracts-ccip/src/v0.8/shared/access/OwnerIsCreator.sol";
 
-contract InvitationManager {
+contract Showtie is OwnerIsCreator {
     address public signProtocolContract;
     address public ccipContract;
 
