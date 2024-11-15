@@ -11,9 +11,7 @@ contract DeployToSepolia is Script {
 
         // Showtieコントラクトのデプロイ
         Showtie showtie = new Showtie(
-            address(1),
-            0x0BF3dE8c5D3e8A2B34D2BEeB17ABfCeBaf363A59,
-            0x779877A7B0D9E8603169DdbD7836e478b4624789
+            address(1), 0x0BF3dE8c5D3e8A2B34D2BEeB17ABfCeBaf363A59, 0x779877A7B0D9E8603169DdbD7836e478b4624789
         );
 
         // デプロイされたコントラクトアドレスをコンソールに出力
@@ -24,7 +22,7 @@ contract DeployToSepolia is Script {
     }
 }
 
-contract callCCIP is Script{
+contract callCCIP is Script {
     function run() public {
         // デプロイの開始
         vm.startBroadcast();
@@ -45,7 +43,6 @@ contract callCCIP is Script{
     }
 }
 
-
 contract receiveText is Script {
     function run() public {
         // RPC通信を開始
@@ -65,4 +62,3 @@ contract receiveText is Script {
         vm.stopBroadcast();
     }
 }
-
