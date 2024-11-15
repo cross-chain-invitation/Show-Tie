@@ -205,13 +205,9 @@ contract Showtie is OwnerIsCreator, CCIPReceiver {
         view
         returns (bool)
     {
-        // Ethereum標準の署名ハッシュを作成
+        // メッセージハッシュをEthereum署名メッセージハッシュに変換
         bytes32 ethSignedMessageHash = messageHash.toEthSignedMessageHash();
-
-        // 署名からアドレスを復元
-        address recoveredSigner = recoverV2(ethSignedMessageHash, signature);
-
-        // 署名者のアドレスと比較
+        address recoveredSigner = ECDSA.recover(ethSignedMessageHash, signature);
         return recoveredSigner == signer;
     }
 
