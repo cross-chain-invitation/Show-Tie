@@ -13,21 +13,31 @@ contract VerifyECDSASignatureTest is Test {
     uint256 privateKey =
         0x1010101010101010101010101010101010101010101010101010101010101010;
 
-    // function setUp() public {
-    //     showtie = new Showtie(address(1), address(2), address(3));
-    //     signer = vm.addr(privateKey); // 秘密鍵に対応するアドレスを生成
-    // }
+    function setUp() public {
+        showtie = new Showtie(address(1), address(2), address(3), 1, 2, 3, 4);
+        signer = vm.addr(privateKey); // 秘密鍵に対応するアドレスを生成
+    }
 
-    function testVerify() public view {
-        uint256 dappsId = 1;
-        uint64 destinationChainSelector = 10344971235874465080;
-        bytes memory message = abi.encodePacked(dappsId, destinationChainSelector);
-        console.logBytes(message);
-        bytes32 hashedMessage = keccak256(message);
-        bytes
-            memory signature = hex"7c86662e830fb67caa9de159bba5a0000ecb42092f7551f434879cdf26bb86db70d3946847ea5a5a67e0b7c63b60b5c34b73b0ac4c2f54984f0156dfbd0f0c9a1c";
-        address signerAddress = 0x65150B5Fa861481651225Ef4412136DCBf696232;
-
-        assertTrue(showtie.verify(hashedMessage, signature, signerAddress));
+    function testVerifySignature() public view {
+        // テストメッセージを定義
+        string memory message = "Hello, ECDSA!";
+        bytes32 messageHash = keccak256(abi.encodePacked(message));
+        // Ethereum標準のメッセージハッシュを作成
+        bytes32 ethSignedMessageHash = messageHash.toEthSignedMessageHash();
+        // メッセージを署名
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(privateKey, ethSignedMessageHash);
+        bytes memory signature = abi.encodePacked(r, s, v);
+        // 署名を検証
+        bool isValid = showtie.verifySignature(signer, messageHash, signature);
+        assertTrue(isValid, "Signature verification should succeed for valid signature");
+        // 不正な署名を検証
+        address fakeSigner = address(0xDEADBEEF);
+        bool isInvalid = showtie.verifySignature(fakeSigner, messageHash, signature);
+        assertFalse(isInvalid, "Signature verification should fail for invalid signer");
+        // メッセージを改ざんして検証
+        string memory fakeMessage = "Fake message";
+        bytes32 fakeMessageHash = keccak256(abi.encodePacked(fakeMessage));
+        bool isInvalidMessage = showtie.verifySignature(signer, fakeMessageHash, signature);
+        assertFalse(isInvalidMessage, "Signature verification should fail for invalid message");
     }
 }
