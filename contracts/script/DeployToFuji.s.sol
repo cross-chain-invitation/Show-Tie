@@ -11,9 +11,7 @@ contract DeployToFuji is Script {
 
         // Showtieコントラクトのデプロイ
         Showtie showtie = new Showtie(
-            address(1),
-            0xF694E193200268f9a4868e4Aa017A0118C9a8177,
-            0x0b9d5D9136855f6FEc3c0993feE6E9CE8a297846
+            address(1), 0xF694E193200268f9a4868e4Aa017A0118C9a8177, 0x0b9d5D9136855f6FEc3c0993feE6E9CE8a297846
         );
 
         // デプロイされたコントラクトアドレスをコンソールに出力
@@ -24,7 +22,7 @@ contract DeployToFuji is Script {
     }
 }
 
-contract callCCIP is Script{
+contract callCCIP is Script {
     function run() public {
         // デプロイの開始
         vm.startBroadcast();
@@ -45,7 +43,6 @@ contract callCCIP is Script{
     }
 }
 
-
 contract receiveText is Script {
     function run() public {
         // RPC通信を開始
@@ -65,4 +62,3 @@ contract receiveText is Script {
         vm.stopBroadcast();
     }
 }
-

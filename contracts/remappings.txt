@@ -1,6 +1,8 @@
 @chainlink/local/=lib/chainlink-local/
 ds-test/=lib/forge-std/lib/ds-test/src/
 forge-std/=lib/forge-std/src/
-@openzeppelin/=lib/openzeppelin-contracts/
 @chainlink/contracts/=node_modules/@chainlink/contracts
 @chainlink/contracts-ccip/=node_modules/@chainlink/contracts-ccip
+solady/=lib/solady/src/
+@ethsign/sign-protocol-evm/=node_modules/@ethsign/sign-protocol-evm/
+@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/

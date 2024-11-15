@@ -11,9 +11,7 @@ contract DeployToLinea is Script {
 
         // Showtieコントラクトのデプロイ
         Showtie showtie = new Showtie(
-            address(1),
-            0xB4431A6c63F72916151fEA2864DBB13b8ce80E8a,
-            0xF64E6E064a71B45514691D397ad4204972cD6508
+            address(1), 0xB4431A6c63F72916151fEA2864DBB13b8ce80E8a, 0xF64E6E064a71B45514691D397ad4204972cD6508
         );
 
         // デプロイされたコントラクトアドレスをコンソールに出力
@@ -24,7 +22,7 @@ contract DeployToLinea is Script {
     }
 }
 
-contract callCCIP is Script{
+contract callCCIP is Script {
     function run() public {
         // デプロイの開始
         vm.startBroadcast();
