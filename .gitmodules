@@ -4,3 +4,6 @@
 [submodule "contracts/lib/chainlink-local"]
 	path = contracts/lib/chainlink-local
 	url = https://github.com/smartcontractkit/chainlink-local
+[submodule "contracts/lib/solady"]
+	path = contracts/lib/solady
+	url = https://github.com/vectorized/solady
