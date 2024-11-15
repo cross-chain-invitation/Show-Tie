@@ -18,15 +18,16 @@ contract Showtie is OwnerIsCreator, CCIPReceiver {
 
     mapping(bytes32 => uint64) public crossChainAttestationIds;
 
-    event InvitationCreated();
+    event InvitationCreated(bytes32 ccipMessageId);
     event CrossChainAttestationCreated();
     event InviteeAttestationCreated();
     event CCIPMessageSent(
         bytes32 indexed messageId, // The unique ID of the CCIP message.
         uint64 indexed destinationChainSelector, // The chain selector of the destination chain.
         address receiver, // The address of the receiver on the destination chain.
-        string text, // The text being sent.
         address feeToken, // the token address used to pay CCIP fees.
+        uint256 dappsId, // The Dapps ID
+        address inviterAddress, // The address of the inviter,
         uint256 fees // The fees paid for sending the CCIP message.
     );
     event MessageReceived(
@@ -50,20 +51,23 @@ contract Showtie is OwnerIsCreator, CCIPReceiver {
     function createInvitation(
         uint64 destinationChainSelector,
         address targetContract,
-        string calldata text
+        uint256 dappsId,
+        bytes calldata signature
     ) external {
-        _sendInvitationViaCCIP(destinationChainSelector, targetContract, text);
-        emit InvitationCreated();
+        bytes32 ccipMessageId = _sendInvitationViaCCIP(destinationChainSelector, targetContract, dappsId, signature);
+        emit InvitationCreated(ccipMessageId);
     }
 
     function _sendInvitationViaCCIP(
         uint64 destinationChainSelector,
         address receiver,
-        string calldata text
+        uint256 dappsId,
+        bytes calldata signature
     ) internal returns (bytes32 messageId) {
+
         Client.EVM2AnyMessage memory evm2AnyMessage = Client.EVM2AnyMessage({
             receiver: abi.encode(receiver),
-            data: abi.encode(text),
+            data: abi.encode(dappsId, msg.sender, signature),
             tokenAmounts: new Client.EVMTokenAmount[](0),
             extraArgs: Client._argsToBytes(
                 Client.EVMExtraArgsV2({
@@ -86,8 +90,9 @@ contract Showtie is OwnerIsCreator, CCIPReceiver {
             messageId,
             destinationChainSelector,
             receiver,
-            text,
             address(s_linkToken),
+            dappsId,
+            msg.sender,
             fees
         );
         return messageId;
