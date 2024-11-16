@@ -144,7 +144,7 @@ contract Showtie is OwnerIsCreator, CCIPReceiver {
 
     function _ccipReceive(Client.Any2EVMMessage memory any2EvmMessage) internal override {
         s_lastReceivedText = abi.decode(any2EvmMessage.data, (string)); // abi-decoding of the sent text
-        (uint256 dappsId, address sender, bytes memory signature, uint64 attestationId) =
+        (uint256 dappsId, address sender, bytes memory signature, uint64 inviterAttestationId) =
             abi.decode(any2EvmMessage.data, (uint256, address, bytes, uint64));
 
         // TODO : Verify the signature
@@ -157,8 +157,8 @@ contract Showtie is OwnerIsCreator, CCIPReceiver {
         bytes[] memory recipients = new bytes[](1);
         recipients[0] = abi.encode(msg.sender);
         Attestation memory a = Attestation({
-            schemaId: inviterSchemaId,
-            linkedAttestationId: 0,
+            schemaId: crosschainSchemaId,
+            linkedAttestationId: inviterAttestationId,
             attestTimestamp: 0,
             revokeTimestamp: 0,
             attester: address(this),
@@ -166,7 +166,7 @@ contract Showtie is OwnerIsCreator, CCIPReceiver {
             dataLocation: DataLocation.ONCHAIN,
             revoked: false,
             recipients: recipients,
-            data: abi.encode(sender, attestationId, dappsId, any2EvmMessage.sourceChainSelector, uint256(chainSelector))
+            data: abi.encode(sender, inviterAttestationId, dappsId, any2EvmMessage.sourceChainSelector, uint256(chainSelector))
         });
         uint64 crossChainAttestationId = spInstance.attest(a, "", "", "");
         bytes32 key = keccak256(abi.encodePacked(sender, dappsId));
@@ -194,7 +194,7 @@ contract Showtie is OwnerIsCreator, CCIPReceiver {
         bytes[] memory recipients = new bytes[](1);
         recipients[0] = abi.encode(msg.sender);
         Attestation memory a = Attestation({
-            schemaId: inviterSchemaId,
+            schemaId: inviteeSchemaId,
             linkedAttestationId: inviterAttestationId,
             attestTimestamp: 0,
             revokeTimestamp: 0,

@@ -2,7 +2,7 @@
 pragma solidity ^0.8.17;
 
 import "forge-std/Script.sol";
-import "../src/Showtie.sol"; // Showtieコントラクトのパス
+import "../src/Showtie.sol";
 
 contract DeployToBase is Script {
     function run() public {
