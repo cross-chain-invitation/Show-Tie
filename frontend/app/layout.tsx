@@ -1,7 +1,7 @@
 import localFont from 'next/font/local';
 import React from 'react';
 import './globals.css';
-import Providers from '@/components/Providers'; // パスを適宜調整してください
+import Providers from '@/components/Providers';
 
 const geistSans = localFont({
   src: './fonts/GeistVF.woff',
@@ -20,8 +20,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+    <html lang="en" suppressHydrationWarning>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      >
         <Providers>{children}</Providers>
       </body>
     </html>

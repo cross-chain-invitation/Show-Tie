@@ -18,7 +18,7 @@ import { useDisconnect } from 'wagmi'
 import { useConnect } from 'wagmi';
 import { Select } from '@/components/ui/select';
 import { useChainId } from 'wagmi';
-import { useSwitchChain } from 'wagmi'
+import { useSwitchChain } from 'wagmi';
 
 interface BackgroundElement {
   left: string;
