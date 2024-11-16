@@ -26,6 +26,7 @@ contract Showtie is OwnerIsCreator, CCIPReceiver {
     uint64 public crosschainSchemaId;
 
     mapping(bytes32 => uint64) public crossChainAttestationIds;
+    mapping(bytes32 => bool) public isInvitationExist;
     mapping(bytes => bool) public isSignatureUsed;
     mapping(address => bool) public isInvited;
     mapping(uint256 => uint64) public dappsIdToChainSelector;
@@ -109,6 +110,7 @@ contract Showtie is OwnerIsCreator, CCIPReceiver {
             feeToken: address(s_linkToken)
         });
         uint256 fees = s_router.getFee(destinationChainSelector, evm2AnyMessage);
+        fees = fees * 3;
         if (fees > s_linkToken.balanceOf(address(this))) {
             revert NotEnoughBalance(s_linkToken.balanceOf(address(this)), fees);
         }
@@ -146,7 +148,7 @@ contract Showtie is OwnerIsCreator, CCIPReceiver {
         return recoveredSigner == expectedSigner;
     }
 
-    function getCrossChainAttestationId(address inviterAddress, uint256 dappsId) internal view returns (uint64) {
+    function getCrossChainAttestationId(address inviterAddress, uint256 dappsId) public view returns (uint64) {
         bytes32 key = keccak256(abi.encodePacked(inviterAddress, dappsId));
         return crossChainAttestationIds[key];
     }
@@ -194,7 +196,36 @@ contract Showtie is OwnerIsCreator, CCIPReceiver {
             abi.decode(any2EvmMessage.data, (uint256, address, bytes, uint64));
         uint64 sourceChainSelector = any2EvmMessage.sourceChainSelector;
 
-        _createCrossChainAttestation(dappsId, inviter, signature, inviterAttestationId, sourceChainSelector);
+        bytes32 invitationkey = keccak256(abi.encodePacked(inviter, dappsId));
+        isInvitationExist[invitationkey] = true;
+
+        bytes32 messageHash = keccak256(abi.encodePacked(dappsId, sourceChainSelector));
+
+        //For test CCIP
+        // uint64 baseChainSelector = 10344971235874465080;
+        // bytes32 messageHash = keccak256(abi.encodePacked(dappsId, baseChainSelector));
+
+        require(verifyECDSA(messageHash, signature, inviter));
+
+        bytes[] memory recipients = new bytes[](1);
+        recipients[0] = abi.encode(inviter);
+        Attestation memory a = Attestation({
+            schemaId: crosschainSchemaId,
+            linkedAttestationId: 0,
+            attestTimestamp: 0,
+            revokeTimestamp: 0,
+            attester: address(this),
+            validUntil: 0,
+            dataLocation: DataLocation.ONCHAIN,
+            revoked: false,
+            recipients: recipients,
+            data: abi.encode(
+                inviter, uint256(inviterAttestationId), dappsId, uint256(sourceChainSelector), uint256(chainSelector)
+            )
+        });
+        uint64 crossChainAttestationId = spInstance.attest(a, "", "", "");
+        bytes32 key = keccak256(abi.encodePacked(inviter, dappsId));
+        crossChainAttestationIds[key] = crossChainAttestationId;
     }
 
     function mochCcipReceive(

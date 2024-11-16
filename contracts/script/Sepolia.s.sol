@@ -35,15 +35,34 @@ contract callCCIP is Script {
     address immutable TARGET_CONTRACT = 0xABF8250bE844d6E88153b688A22D3030a88e42a1; //Base Sepolia
 
     function run() public {
-        address showtieAddress = 0x53D1D42c154934FF03Ed26579BB88C9A4834F698; //Sepolia Contract
-        Showtie showtie = Showtie(showtieAddress);
         vm.startBroadcast();
+        address showtieAddress = 0xc6a3C5ce873481F0EB6Bb2b172cDD6e27e8aCff1; //Sepolia Contract
+        Showtie showtie = Showtie(showtieAddress);
 
         uint64 destinationChainSelector = 10344971235874465080; //Base Chain Selector
         uint256 dappsId = 1;
         bytes memory signature =
-            hex"96bfd20f3db1f6e78bfec633ec3968c7ceffbf335968474a7103172ba565c30c4a46fa53f2016e5dd5674c0a9ca7e571f793d49fde637eb62e257fce344e32251b";
+            hex"5cb69f5561b34a4244c1a91ade3d838effed20d3c03cb140dab91ff5db6faf7c7f0babe3275172b8db9adabc61780d7b9a6763271ac0ae25b30e000c93363b2e1b";
         showtie.createInvitation(destinationChainSelector, TARGET_CONTRACT, dappsId, signature);
+
+        vm.stopBroadcast();
+    }
+}
+
+contract callReceive is Script {
+    uint256 dappsId = 1;
+    address inviter = 0xf78f634e7D8322aB0Fe0C061B9629Dc5EBEc43c3;
+    bytes inviterSignature = hex"5cb69f5561b34a4244c1a91ade3d838effed20d3c03cb140dab91ff5db6faf7c7f0babe3275172b8db9adabc61780d7b9a6763271ac0ae25b30e000c93363b2e1b";
+    uint64 inviterAttestationId = 1;
+    uint64 sourceChainSelector = 10344971235874465080;  //Base Chain Selector
+
+    function run() public {
+        vm.startBroadcast();
+
+        address baseShowtieAddress = 0xc6a3C5ce873481F0EB6Bb2b172cDD6e27e8aCff1;
+        Showtie showtie = Showtie(baseShowtieAddress);
+
+        showtie.mochCcipReceive(dappsId, inviter, inviterSignature, inviterAttestationId, sourceChainSelector);
 
         vm.stopBroadcast();
     }
