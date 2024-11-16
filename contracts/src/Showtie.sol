@@ -192,40 +192,18 @@ contract Showtie is OwnerIsCreator, CCIPReceiver {
     }
 
     function _ccipReceive(Client.Any2EVMMessage memory any2EvmMessage) internal override {
-        (uint256 dappsId, address inviter, bytes memory signature, uint64 inviterAttestationId) =
+        (uint256 dappsId, address inviter, bytes memory signature, ) =
             abi.decode(any2EvmMessage.data, (uint256, address, bytes, uint64));
         uint64 sourceChainSelector = any2EvmMessage.sourceChainSelector;
+        bytes32 messageHash = keccak256(abi.encodePacked(dappsId, sourceChainSelector));
+        require(verifyECDSA(messageHash, signature, inviter));
 
         bytes32 invitationkey = keccak256(abi.encodePacked(inviter, dappsId));
         isInvitationExist[invitationkey] = true;
 
-        bytes32 messageHash = keccak256(abi.encodePacked(dappsId, sourceChainSelector));
-
-        //For test CCIP
-        // uint64 baseChainSelector = 10344971235874465080;
-        // bytes32 messageHash = keccak256(abi.encodePacked(dappsId, baseChainSelector));
-
-        require(verifyECDSA(messageHash, signature, inviter));
-
-        bytes[] memory recipients = new bytes[](1);
-        recipients[0] = abi.encode(inviter);
-        Attestation memory a = Attestation({
-            schemaId: crosschainSchemaId,
-            linkedAttestationId: 0,
-            attestTimestamp: 0,
-            revokeTimestamp: 0,
-            attester: address(this),
-            validUntil: 0,
-            dataLocation: DataLocation.ONCHAIN,
-            revoked: false,
-            recipients: recipients,
-            data: abi.encode(
-                inviter, uint256(inviterAttestationId), dappsId, uint256(sourceChainSelector), uint256(chainSelector)
-            )
-        });
-        uint64 crossChainAttestationId = spInstance.attest(a, "", "", "");
-        bytes32 key = keccak256(abi.encodePacked(inviter, dappsId));
-        crossChainAttestationIds[key] = crossChainAttestationId;
+        // //For test CCIP
+        // // uint64 baseChainSelector = 10344971235874465080;
+        // // bytes32 messageHash = keccak256(abi.encodePacked(dappsId, baseChainSelector));
     }
 
     function mochCcipReceive(
@@ -246,6 +224,9 @@ contract Showtie is OwnerIsCreator, CCIPReceiver {
     ) external returns (uint64) {
         require(isInvited[msg.sender] == false, "Already invited");
         require(isSignatureUsed[captchaSignature] == false, "Signature already used");
+
+        bytes32 invitationkey = keccak256(abi.encodePacked(inviter, dappsId));
+        require(isInvitationExist[invitationkey]);
 
         //For testing admin
         // address admin = 0x842DC0443Ac0cc6423bB7D64cF54d4e4b6a244De;
