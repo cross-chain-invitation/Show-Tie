@@ -7,29 +7,23 @@ import {IRouterClient} from "@chainlink/contracts-ccip/src/v0.8/ccip/interfaces/
 import {LinkTokenInterface} from "@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol";
 import {CCIPReceiver} from "@chainlink/contracts-ccip/src/v0.8/ccip/applications/CCIPReceiver.sol";
 import {ISP} from "@ethsign/sign-protocol-evm/src/interfaces/ISP.sol";
-import {ISPHook} from "@ethsign/sign-protocol-evm/src/interfaces/ISPHook.sol";
 import {Attestation} from "@ethsign/sign-protocol-evm/src/models/Attestation.sol";
 import {DataLocation} from "@ethsign/sign-protocol-evm/src/models/DataLocation.sol";
 import "solady/utils/ECDSA.sol";
-import "@openzeppelin/contracts/utils/Address.sol";
 import "forge-std/console.sol";
 
 contract Showtie is OwnerIsCreator, CCIPReceiver {
     using ECDSA for bytes32;
 
-    address public ccipContract;
     address private captchaSigner;
     uint64 public chainSelector;
-    uint64 public schemaId;
-
+    LinkTokenInterface private s_linkToken;
     IRouterClient private s_router;
     ISP public spInstance;
 
     uint64 public inviterSchemaId;
     uint64 public inviteeSchemaId;
     uint64 public crosschainSchemaId;
-
-    LinkTokenInterface private s_linkToken;
 
     mapping(bytes32 => uint64) public crossChainAttestationIds;
     mapping(bytes => bool) public isSignatureUsed;
@@ -39,13 +33,7 @@ contract Showtie is OwnerIsCreator, CCIPReceiver {
     event InvitationCreated(bytes32 ccipMessageId, uint64 attestationId);
     event CrossChainAttestationCreated();
     event InviteeAttestationCreated();
-    // The chain selector of the destination chain.
-    // The address of the receiver on the destination chain.
-    // the token address used to pay CCIP fees.
-    // The Dapps ID
-    // The address of the inviter,
-    // The fees paid for sending the CCIP message.
-    // The unique ID of the CCIP message.
+
     event CCIPMessageSent(
         bytes32 indexed messageId,
         uint64 indexed destinationChainSelector,
@@ -55,10 +43,7 @@ contract Showtie is OwnerIsCreator, CCIPReceiver {
         address inviterAddress,
         uint256 fees
     );
-    // The unique ID of the message.
-    // The chain selector of the source chain.
-    // The address of the sender from the source chain.
-    // The text that was received.
+
     event MessageReceived(bytes32 indexed messageId, uint64 indexed sourceChainSelector, address sender, string text);
 
     error NotEnoughBalance(uint256 currentBalance, uint256 calculatedFees);
@@ -166,12 +151,15 @@ contract Showtie is OwnerIsCreator, CCIPReceiver {
         return crossChainAttestationIds[key];
     }
 
-    function _ccipReceive(Client.Any2EVMMessage memory any2EvmMessage) internal override {
-        (uint256 dappsId, address inviter, bytes memory signature, uint64 inviterAttestationId) =
-            abi.decode(any2EvmMessage.data, (uint256, address, bytes, uint64));
-
+    function _createCrossChainAttestation(
+        uint256 dappsId,
+        address inviter,
+        bytes memory signature,
+        uint64 inviterAttestationId,
+        uint64 sourceChainSelector
+    ) internal returns (uint64) {
         //For Production
-        bytes32 messageHash = keccak256(abi.encodePacked(dappsId, any2EvmMessage.sourceChainSelector));
+        bytes32 messageHash = keccak256(abi.encodePacked(dappsId, sourceChainSelector));
 
         //For test CCIP
         // uint64 baseChainSelector = 10344971235874465080;
@@ -192,22 +180,39 @@ contract Showtie is OwnerIsCreator, CCIPReceiver {
             revoked: false,
             recipients: recipients,
             data: abi.encode(
-                inviter,
-                uint256(inviterAttestationId),
-                dappsId,
-                uint256(any2EvmMessage.sourceChainSelector),
-                uint256(chainSelector)
+                inviter, uint256(inviterAttestationId), dappsId, uint256(sourceChainSelector), uint256(chainSelector)
             )
         });
         uint64 crossChainAttestationId = spInstance.attest(a, "", "", "");
         bytes32 key = keccak256(abi.encodePacked(inviter, dappsId));
         crossChainAttestationIds[key] = crossChainAttestationId;
+        return crossChainAttestationId;
     }
 
-    function approveInvitation(uint256 dappsId, address inviter, bytes memory captchaSignature)
-        external
-        returns (uint64)
-    {
+    function _ccipReceive(Client.Any2EVMMessage memory any2EvmMessage) internal override {
+        (uint256 dappsId, address inviter, bytes memory signature, uint64 inviterAttestationId) =
+            abi.decode(any2EvmMessage.data, (uint256, address, bytes, uint64));
+        uint64 sourceChainSelector = any2EvmMessage.sourceChainSelector;
+
+        _createCrossChainAttestation(dappsId, inviter, signature, inviterAttestationId, sourceChainSelector);
+    }
+
+    function mochCcipReceive(
+        uint256 dappsId,
+        address inviter,
+        bytes memory signature,
+        uint64 inviterAttestationId,
+        uint64 sourceChainSelector
+    ) public {
+        _createCrossChainAttestation(dappsId, inviter, signature, inviterAttestationId, sourceChainSelector);
+    }
+
+    function approveInvitation(
+        uint256 dappsId,
+        address inviter,
+        bytes memory inviteeSignature,
+        bytes memory captchaSignature
+    ) external returns (uint64) {
         require(isInvited[msg.sender] == false, "Already invited");
         require(isSignatureUsed[captchaSignature] == false, "Signature already used");
 
@@ -218,11 +223,15 @@ contract Showtie is OwnerIsCreator, CCIPReceiver {
         console.logBytes32(hashedMessage);
         require(verifyECDSA(hashedMessage, captchaSignature, captchaSigner));
 
+        bytes32 messageHash = keccak256(abi.encodePacked(inviter, dappsId));
+        require(verifyECDSA(messageHash, inviteeSignature, msg.sender));
+
         uint64 crossChainAttestationId = getCrossChainAttestationId(inviter, dappsId);
         uint64 sourceChainSelector = dappsIdToChainSelector[dappsId];
 
-        bytes[] memory recipients = new bytes[](1);
-        recipients[0] = abi.encode(msg.sender);
+        bytes[] memory recipients = new bytes[](2);
+        recipients[0] = abi.encode(inviter);
+        recipients[1] = abi.encode(msg.sender);
         Attestation memory a = Attestation({
             schemaId: inviteeSchemaId,
             linkedAttestationId: crossChainAttestationId,
@@ -234,11 +243,50 @@ contract Showtie is OwnerIsCreator, CCIPReceiver {
             revoked: false,
             recipients: recipients,
             data: abi.encode(
-                msg.sender, inviter, dappsId, captchaSignature, uint256(sourceChainSelector), uint256(chainSelector)
+                msg.sender,
+                inviter,
+                dappsId,
+                inviteeSignature,
+                captchaSignature,
+                captchaSigner,
+                uint256(sourceChainSelector),
+                uint256(chainSelector)
             )
         });
-        uint64 attestationId = spInstance.attest(a, "", "", "");
+        uint64 inviteeAttestationId = spInstance.attest(a, "", "", "");
 
-        return attestationId;
+        isInvited[msg.sender] = true;
+        isSignatureUsed[captchaSignature] = true;
+
+        return inviteeAttestationId;
+    }
+
+    // -------------------------------------- Set Functions --------------------------------------
+    function setSignProtocolContract(address _signProtocolContract) external onlyOwner {
+        spInstance = ISP(_signProtocolContract);
+    }
+
+    function setCCIPRouter(address _router) external onlyOwner {
+        s_router = IRouterClient(_router);
+    }
+
+    function setLINKToken(address _link) external onlyOwner {
+        s_linkToken = LinkTokenInterface(_link);
+    }
+
+    function setCaptchaSigner(address _captchaSigner) external onlyOwner {
+        captchaSigner = _captchaSigner;
+    }
+
+    function setInviterSchemaId(uint64 _inviterSchemaId) external onlyOwner {
+        inviterSchemaId = _inviterSchemaId;
+    }
+
+    function setCroschainSchemaId(uint64 _crosschainSchemaId) external onlyOwner {
+        crosschainSchemaId = _crosschainSchemaId;
+    }
+
+    function setInviteeSchemaId(uint64 _inviteeSchemaId) external onlyOwner {
+        inviteeSchemaId = _inviteeSchemaId;
     }
 }
