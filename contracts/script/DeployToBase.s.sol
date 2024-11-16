@@ -18,7 +18,7 @@ contract DeployToBase is Script {
             10344971235874465080, //CCIP Chain selector
             0x41e, //InviterSchema
             0x423, //Crosschain Schema
-            0x425 //Invitee Schema
+            0x483 //Invitee Schema
         );
 
         console.log("Showtie deployed at:", address(showtie));
@@ -30,17 +30,17 @@ contract DeployToBase is Script {
 
 contract callCCIP is Script {
     function run() public {
-        vm.startBroadcast();
-        address showtieAddress = 0x53D1D42c154934FF03Ed26579BB88C9A4834F698;
-        Showtie showtie = Showtie(showtieAddress);
+        // vm.startBroadcast();
+        // address showtieAddress = 0x53D1D42c154934FF03Ed26579BB88C9A4834F698;
+        // Showtie showtie = Showtie(showtieAddress);
 
-        uint64 destinationChainSelector = 16015286601757825753; //
-        address targetContract = 0x900E61f9CF646453aa208e423372B87FA0C53846;
+        // uint64 destinationChainSelector = 16015286601757825753; //
+        // address targetContract = 0x900E61f9CF646453aa208e423372B87FA0C53846;
 
-        // 関数を実行
-        showtie.createInvitation(destinationChainSelector, targetContract, 1, bytes(""));
+        // // 関数を実行
+        // showtie.createInvitation(destinationChainSelector, targetContract, 1, bytes(""));
 
-        // デプロイの終了
-        vm.stopBroadcast();
+        // // デプロイの終了
+        // vm.stopBroadcast();
     }
 }

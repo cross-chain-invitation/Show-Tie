@@ -33,6 +33,7 @@ contract VerifyECDSASignatureTest is Test {
     uint256 privateKey = 0x1010101010101010101010101010101010101010101010101010101010101010;
 
     function setUp() public {
+        vm.prank(0x842DC0443Ac0cc6423bB7D64cF54d4e4b6a244De);
         mockSignProtocol = new MockSignProtocol();
         showtie = new Showtie(
             address(mockSignProtocol),
