@@ -2,7 +2,7 @@
 pragma solidity ^0.8.17;
 
 import "forge-std/Script.sol";
-import "../src/Showtie.sol"; // Showtieコントラクトのパス
+import "../src/Showtie.sol";
 
 contract DeployToBase is Script {
     function run() public {
@@ -20,8 +20,6 @@ contract DeployToBase is Script {
             0x425
         );
 
-
-
         // デプロイされたコントラクトアドレスをコンソールに出力
         console.log("Showtie deployed at:", address(showtie));
 
@@ -35,7 +33,7 @@ contract callCCIP is Script {
         // デプロイの開始
         vm.startBroadcast();
 
-        address showtieAddress = 0x582BeC27D96Ada0e958048208DD2953a6B642C6e;
+        address showtieAddress = 0x53D1D42c154934FF03Ed26579BB88C9A4834F698;
         Showtie showtie = Showtie(showtieAddress);
 
         // createInvitation関数の引数を設定
@@ -43,12 +41,7 @@ contract callCCIP is Script {
         address targetContract = 0x900E61f9CF646453aa208e423372B87FA0C53846;
 
         // 関数を実行
-        showtie.createInvitation(
-            destinationChainSelector,
-            targetContract,
-            1,
-            bytes("")
-        );
+        showtie.createInvitation(destinationChainSelector, targetContract, 1, bytes(""));
 
         // デプロイの終了
         vm.stopBroadcast();
