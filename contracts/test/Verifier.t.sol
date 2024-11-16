@@ -56,4 +56,18 @@ contract VerifierTest is Test {
 
         assertTrue(isValid, "Signature verification should succeed with correct signer");
     }
+
+    function testVerifyInvalidSigner2() public view {
+        uint256 dappsId = 1;
+        address inviter = 0x917Db2634713b7CDD80F18455D7c540633698D10;
+        address invitee = 0x9cE87dcbD55f8eD571EFF906584cB6A83B5c2352;
+
+        bytes memory signature =
+            hex"6e431900e0c08b4c2cf29f9eb21dbd07a852e7f012c2cd5beff7610df1006ece051ab4e11155f3c5692c54a3c891444819ddc8c264dcbc0363e2f79809aae7651b";
+        bytes32 messageHash = keccak256(abi.encodePacked(inviter, dappsId));
+
+        bool isValid = verifier.verifyECDSA(messageHash, signature, invitee);
+
+        assertTrue(isValid, "Signature verification should succeed with correct signer");
+    }
 }

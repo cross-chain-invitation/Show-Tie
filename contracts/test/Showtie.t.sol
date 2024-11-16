@@ -6,7 +6,7 @@ import "solady/utils/ECDSA.sol";
 import "../src/Showtie.sol";
 import "forge-std/console.sol";
 
-contract VerifyECDSASignatureTest is Test {
+contract testShowtie is Test {
     MockSignProtocol mockSignProtocol;
 
     using ECDSA for bytes32;
@@ -18,7 +18,7 @@ contract VerifyECDSASignatureTest is Test {
     address link = address(3);
     uint64 chainSelector = 10344971235874465080; //base
 
-    address inviter = 0x9cE87dcbD55f8eD571EFF906584cB6A83B5c2352;
+    address inviter = 0x917Db2634713b7CDD80F18455D7c540633698D10;
 
     address signProtocol = address(1);
     uint64 inviterSchemaId = 1;
@@ -46,12 +46,13 @@ contract VerifyECDSASignatureTest is Test {
         );
     }
 
-    function testVerification() public {
+    function testApproveInvitation() public {
         vm.prank(0x9cE87dcbD55f8eD571EFF906584cB6A83B5c2352);
         showtie.approveInvitation(
             1,
             inviter,
-            hex"bb72a383fc6b4b1099f67c7807640efa6f56d5a10876ce24d7ed3511a281a872061063f7a42d6fecae4bc936d61a601dcd750a71cdfc130244cbc920479ecac21c"
+            hex"f670b3393d39ddcc23ca6ba580869d82e8d9de3069255f5bc85c237bb5caad554577610df9cad724eec94e8ed893dc5a98895dc1c41d5b46736cc3c1e56aac4f1b",
+            hex"6e431900e0c08b4c2cf29f9eb21dbd07a852e7f012c2cd5beff7610df1006ece051ab4e11155f3c5692c54a3c891444819ddc8c264dcbc0363e2f79809aae7651b"
         );
     }
 }
