@@ -15,9 +15,12 @@ import { useAccount, useSignMessage, useChainId, useDisconnect, useSwitchChain }
 import { writeContract } from '@wagmi/core';
 import HCaptcha from '@hcaptcha/react-hcaptcha';
 import ERC20ABI from '@/src/abi/ERC20.json';
+import ShowtieABI from '@/src/abi/Showtie.json';
 import { IndexService } from "@ethsign/sp-sdk";
 import { wagmiConfig } from '@/components/Providers';
-import { Name } from '@coinbase/onchainkit/identity';
+import {
+  Name
+} from '@coinbase/onchainkit/identity';
 
 
 const SelectPage = () => {
@@ -112,36 +115,47 @@ const SelectPage = () => {
       }
 
       const chainSelectorId = getChainSelectorIdByChainId(chainId.toString());
-
       console.log('chainSelectorId:', chainSelectorId);
       console.log('address:', address);
-
       console.log('chainId:', chainId);
-      
       if (!chainSelectorId) {
         toast.error('Chain selector ID not found');
         return;
       }
-
       // Create packed message
       const packedMessage = encodePacked(
         ['uint256', 'uint64'],
         [BigInt(dappsId), BigInt(chainSelectorId)]
       );
-
       // Create message hash for ECDSA signature
       const messageHash = keccak256(packedMessage);
-      
       // Generate ECDSA signature
       const signature = await signMessageAsync({
         account: address, 
         message: { raw: messageHash }
       });
-
-      console.log('signature:', signature);
-
       console.log('ECDSA signature:', signature);
       toast.success('ECDSA signature generated successfully');
+
+      const createInvitationTx = await writeContract(wagmiConfig, {
+        abi: ShowtieABI,
+        address: '0xc6a3C5ce873481F0EB6Bb2b172cDD6e27e8aCff1',
+        functionName: 'createInvitation',
+        args: [
+          BigInt('10344971235874465080'),
+          '0xEff4F710b63DfF778052aa093FD34584Da5a4589',
+          BigInt(dappsId),
+          signature,
+        ],
+      });
+
+      console.log(createInvitationTx, 'createInvitationTx');
+
+      toast.success(
+        `https://base-sepolia.blockscout.com/tx/${createInvitationTx}/`
+      );
+
+      toast.success(``)
       
     } catch (error) {
       toast.error(`Error: ${error instanceof Error ? error.message : String(error)}`);
@@ -200,20 +214,14 @@ const SelectPage = () => {
 
       // Create message hash for ECDSA signature
       const captchaMessageHash = keccak256(packedCaptchaMessage);
-
       console.log('captchaMessageHash:', captchaMessageHash);
-
       console.log('process.env.WALLET_PRIVATE_KEY:', process.env.NEXT_PUBLIC_WALLET_PRIVATE_KEY);
-
       const account = privateKeyToAccount(process.env.NEXT_PUBLIC_WALLET_PRIVATE_KEY as `0x${string}`);
-
       console.log('account:', account);
-
       const captchaSignature = await signMessageAsync({
         account: account,
         message: { raw: captchaMessageHash }
       });
-
       console.log('captchaSignature:', captchaSignature);
 
       // Create packed message
@@ -221,23 +229,35 @@ const SelectPage = () => {
         ['address', 'uint256'],
         [inviterAddress as `0x${string}`, BigInt(dappsId)]
       );
-
       console.log('address:', address);
-
       // Create message hash for ECDSA signature
       const inviteeMessageHash = keccak256(inviteePackedMessage);
-
       console.log('inviteeMessageHash:', inviteeMessageHash);
-      
       // Generate ECDSA signature
       const inviteeSignature = await signMessageAsync({
         account: address, 
         message: { raw: inviteeMessageHash }
       });
-
       console.log('inviteeSignature:', inviteeSignature);
-
       toast.success('ECDSA signature generated successfully');
+
+      const approveInvitationTx = await writeContract(wagmiConfig, {
+        abi: ShowtieABI,
+        address: '0xc6a3C5ce873481F0EB6Bb2b172cDD6e27e8aCff1',
+        functionName: 'approveInvitation',
+        args: [
+          BigInt(dappsId),
+          inviterAddress as `0x${string}`,
+          inviteeSignature,
+          captchaSignature,
+        ],
+      });
+
+      console.log(approveInvitationTx, 'approveInvitationTx');
+
+      toast.success(
+        `https://base-sepolia.blockscout.com/tx/${approveInvitationTx}/`
+      );
       
     } catch (error) {
       toast.error(`Error: ${error instanceof Error ? error.message : String(error)}`);
@@ -286,7 +306,6 @@ const SelectPage = () => {
         });
         
         console.log('transaction:', transaction);
-
         toast.success(
           `https://base-sepolia.blockscout.com/${transaction}/`
         );
@@ -546,7 +565,7 @@ const SelectPage = () => {
               <Name 
                 address={address} 
                 className="w-full bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 text-white font-bold py-4 rounded-full text-lg relative overflow-hidden group text-center flex justify-center mt-6"
-              /> 
+            /> 
               <Button 
                 onClick={handleDisconnect}
                 className="w-full bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 text-white font-bold py-4 rounded-full text-lg relative overflow-hidden group text-center flex justify-center mt-6"
