@@ -33,7 +33,7 @@ contract callCCIP is Script {
         // デプロイの開始
         vm.startBroadcast();
 
-        address showtieAddress = 0x582BeC27D96Ada0e958048208DD2953a6B642C6e;
+        address showtieAddress = 0x53D1D42c154934FF03Ed26579BB88C9A4834F698;
         Showtie showtie = Showtie(showtieAddress);
 
         // createInvitation関数の引数を設定

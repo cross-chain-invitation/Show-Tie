@@ -46,7 +46,7 @@ contract callCCIP is Script {
 
         // createInvitation関数の引数を設定
         uint64 destinationChainSelector = 10344971235874465080; //Base
-        address targetContract = 0x15B891DeC2a285753E52E2c697fF372aa2741218; // Base Contract
+        address targetContract = 0x53D1D42c154934FF03Ed26579BB88C9A4834F698; // Base Contract
         uint256 dappsId = 1;
         bytes memory signature =
             hex"7c86662e830fb67caa9de159bba5a0000ecb42092f7551f434879cdf26bb86db70d3946847ea5a5a67e0b7c63b60b5c34b73b0ac4c2f54984f0156dfbd0f0c9a1c";

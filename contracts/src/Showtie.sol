@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.28;
+pragma solidity ^0.8.19;
 
 import {OwnerIsCreator} from "@chainlink/contracts-ccip/src/v0.8/shared/access/OwnerIsCreator.sol";
 import {Client} from "@chainlink/contracts-ccip/src/v0.8/ccip/libraries/Client.sol";
@@ -28,8 +28,6 @@ contract Showtie is OwnerIsCreator, CCIPReceiver {
     uint64 public inviterSchemaId;
     uint64 public inviteeSchemaId;
     uint64 public crosschainSchemaId;
-
-    string private s_lastReceivedText; // Store the last received text.
 
     LinkTokenInterface private s_linkToken;
 
@@ -114,14 +112,15 @@ contract Showtie is OwnerIsCreator, CCIPReceiver {
         uint64 destinationChainSelector,
         address receiver,
         uint256 dappsId,
-        bytes calldata signature,
+        bytes memory signature,
         uint64 attestationId
     ) internal returns (bytes32 messageId) {
         Client.EVM2AnyMessage memory evm2AnyMessage = Client.EVM2AnyMessage({
             receiver: abi.encode(receiver),
             data: abi.encode(dappsId, msg.sender, signature, attestationId),
             tokenAmounts: new Client.EVMTokenAmount[](0),
-            extraArgs: Client._argsToBytes(Client.EVMExtraArgsV2({gasLimit: 200_000, allowOutOfOrderExecution: true})),
+            // extraArgs: Client._argsToBytes(Client.EVMExtraArgsV2({gasLimit: 200_000, allowOutOfOrderExecution: true})),
+            extraArgs: "",
             feeToken: address(s_linkToken)
         });
         uint256 fees = s_router.getFee(destinationChainSelector, evm2AnyMessage);
@@ -143,8 +142,7 @@ contract Showtie is OwnerIsCreator, CCIPReceiver {
     }
 
     function _ccipReceive(Client.Any2EVMMessage memory any2EvmMessage) internal override {
-        s_lastReceivedText = abi.decode(any2EvmMessage.data, (string)); // abi-decoding of the sent text
-        (uint256 dappsId, address sender, bytes memory signature, uint64 inviterAttestationId) =
+        (uint256 dappsId, address inviter, bytes memory signature, uint64 inviterAttestationId) =
             abi.decode(any2EvmMessage.data, (uint256, address, bytes, uint64));
 
         // TODO : Verify the signature
@@ -166,18 +164,11 @@ contract Showtie is OwnerIsCreator, CCIPReceiver {
             dataLocation: DataLocation.ONCHAIN,
             revoked: false,
             recipients: recipients,
-            data: abi.encode(sender, inviterAttestationId, dappsId, any2EvmMessage.sourceChainSelector, uint256(chainSelector))
+            data: abi.encode(inviter, inviterAttestationId, dappsId, any2EvmMessage.sourceChainSelector, uint256(chainSelector))
         });
         uint64 crossChainAttestationId = spInstance.attest(a, "", "", "");
-        bytes32 key = keccak256(abi.encodePacked(sender, dappsId));
+        bytes32 key = keccak256(abi.encodePacked(inviter, dappsId));
         crossChainAttestationIds[key] = crossChainAttestationId;
-
-        emit MessageReceived(
-            any2EvmMessage.messageId,
-            any2EvmMessage.sourceChainSelector, // fetch the source chain identifier (aka selector)
-            abi.decode(any2EvmMessage.sender, (address)), // abi-decoding of the sender address,
-            abi.decode(any2EvmMessage.data, (string))
-        );
     }
 
     function approveInvitation(uint256 dappsId, address invitor, bytes memory captchaSignature) external {
@@ -210,8 +201,4 @@ contract Showtie is OwnerIsCreator, CCIPReceiver {
         // TODO : Emit Event
     }
 
-    // Use it only for test
-    function getLastReceivedText() external view returns (string memory) {
-        return s_lastReceivedText;
-    }
 }
