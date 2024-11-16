@@ -12,10 +12,12 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import data from '@/public/data.json';
 import { useAccount, useSignMessage, useChainId, useDisconnect, useWriteContract } from 'wagmi';
+import { writeContract } from '@wagmi/core';
 import HCaptcha from '@hcaptcha/react-hcaptcha';
 import ERC20ABI from '@/src/abi/ERC20.json';
 import { IndexService } from "@ethsign/sp-sdk";
 import { useSwitchChain } from 'wagmi'
+import {wagmiConfig} from '@/components/Providers';
 
 export default function SelectPage() {
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
@@ -30,7 +32,6 @@ export default function SelectPage() {
   const [inviteeAttestationId, setInviteeAttestationId] = useState('');
   const [hcaptchaToken, setHcaptchaToken] = useState<string | null>(null);
   const { disconnect } = useDisconnect();
-  const { writeContract } = useWriteContract()
   const { chains, switchChain } = useSwitchChain()
 
   console.log(chains)
@@ -235,15 +236,20 @@ export default function SelectPage() {
       }
 
       // mint reward
-    //   writeContract({ 
-    //     abi: ERC20ABI,
-    //     address: '0x7BD72b6D118F763832185744Ee054A550B6eb4cf',
-    //     functionName: 'mint',
-    //     args: [
-    //       '0xa97999f603247570fa688f40aAeAef7A90676254',
-    //       BigInt(10),
-    //     ],
-    //  })
+      const transaction = await writeContract(wagmiConfig, {
+        abi: ERC20ABI,
+        address: '0x7BD72b6D118F763832185744Ee054A550B6eb4cf',
+        functionName: 'mint',
+        args: ['0xa97999f603247570fa688f40aAeAef7A90676254', BigInt(10)],
+      });
+      
+      console.log('transaction:', transaction);
+      toast.success(
+        `Send Reward Successfully!!!`
+      );
+      toast.success(
+          `https://base-sepolia.blockscout.com/${transaction}/`
+      );
 
       const res = await queryAttestations();
 

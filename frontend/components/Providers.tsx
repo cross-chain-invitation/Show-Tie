@@ -6,7 +6,7 @@ import { coinbaseWallet } from 'wagmi/connectors';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { metaMask } from '@wagmi/connectors';
 
-const wagmiConfig = createConfig({
+export const wagmiConfig = createConfig({
   chains: [baseSepolia, sepolia],
   connectors: [
     metaMask(),
