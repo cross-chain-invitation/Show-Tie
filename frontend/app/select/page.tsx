@@ -136,11 +136,12 @@ const SelectPage = () => {
 
       const createInvitationTx = await writeContract(wagmiConfig, {
         abi: ShowtieABI,
-        address: '0xc6a3C5ce873481F0EB6Bb2b172cDD6e27e8aCff1',
+        address: '0x892a7880F0Ae0Ac74A27f14aCe0cB27b9b3d041A',
         functionName: 'createInvitation',
         args: [
-          BigInt('10344971235874465080'),
-          '0xEff4F710b63DfF778052aa093FD34584Da5a4589',
+          // BigInt('10344971235874465080'), //To Base
+          BigInt('16015286601757825753'), // To Sepolia
+          '0x835f7f0678FF1903D5198B82c9A2eD1F3238D606',
           BigInt(dappsId),
           signature,
         ],
@@ -240,7 +241,7 @@ const SelectPage = () => {
 
       const approveInvitationTx = await writeContract(wagmiConfig, {
         abi: ShowtieABI,
-        address: '0xc6a3C5ce873481F0EB6Bb2b172cDD6e27e8aCff1',
+        address: '0x835f7f0678FF1903D5198B82c9A2eD1F3238D606',
         functionName: 'approveInvitation',
         args: [
           BigInt(dappsId),
