@@ -1,3 +1,4 @@
+
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
@@ -5,23 +6,23 @@ import "forge-std/Script.sol";
 import "../src/Showtie.sol";
 import {LinkTokenInterface} from "@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol";
 
-contract DeployToBase is Script {
-    LinkTokenInterface private s_linkToken = LinkTokenInterface(0xE4aB69C077896252FAFBD49EFD26B5D171A32410);
+contract DeployToCelo is Script {
+    LinkTokenInterface private s_linkToken = LinkTokenInterface(0x32E08557B14FaD8908025619797221281D439071);
 
     function run() public {
         vm.startBroadcast();
 
         Showtie showtie = new Showtie(
             0x4e4af2a21ebf62850fD99Eb6253E1eFBb56098cD, //Sign Protocol
-            0xD3b06cEbF099CE7DA4AcCf578aaebFDBd6e88a93, //CCIP router
-            0xE4aB69C077896252FAFBD49EFD26B5D171A32410, //LINK token
-            10344971235874465080, //CCIP Chain selector
-            0x41e, //InviterSchema
-            0x483, //Invitee Schema
-            0x423 //Crosschain Schema
+            0xb00E95b773528E2Ea724DB06B75113F239D15Dca, //CCIP router
+            0x32E08557B14FaD8908025619797221281D439071, //LINK token
+            3552045678561919002, //CCIP Chain selector
+            0x33, //InviterSchema
+            0x35, //Invitee Schema
+            0x34 //Crosschain Schema
         );
 
-        console.log("Showtie deployed at:", address(showtie));
+        console.log("Showtie deployed at Celo:", address(showtie));
         s_linkToken.transfer(address(showtie), 1000000000000000000);
 
         vm.stopBroadcast();
@@ -38,7 +39,7 @@ contract callReceive is Script {
     function run() public {
         vm.startBroadcast();
 
-        address baseShowtieAddress = 0x445216B90703FDAfD64A5037817C9F5E8377e79E;
+        address baseShowtieAddress = 0xABF8250bE844d6E88153b688A22D3030a88e42a1;
         Showtie showtie = Showtie(baseShowtieAddress);
 
         showtie.mochCcipReceive(dappsId, inviter, inviterSignature, inviterAttestationId, sourceChainSelector);
