@@ -180,10 +180,10 @@ contract Showtie is OwnerIsCreator, CCIPReceiver {
         require(verifyECDSA(messageHash, signature, inviter));
 
         bytes[] memory recipients = new bytes[](1);
-        recipients[0] = abi.encode(msg.sender);
+        recipients[0] = abi.encode(inviter);
         Attestation memory a = Attestation({
             schemaId: crosschainSchemaId,
-            linkedAttestationId: inviterAttestationId,
+            linkedAttestationId: 0,
             attestTimestamp: 0,
             revokeTimestamp: 0,
             attester: address(this),
@@ -192,7 +192,11 @@ contract Showtie is OwnerIsCreator, CCIPReceiver {
             revoked: false,
             recipients: recipients,
             data: abi.encode(
-                inviter, inviterAttestationId, dappsId, any2EvmMessage.sourceChainSelector, uint256(chainSelector)
+                inviter,
+                uint256(inviterAttestationId),
+                dappsId,
+                uint256(any2EvmMessage.sourceChainSelector),
+                uint256(chainSelector)
             )
         });
         uint64 crossChainAttestationId = spInstance.attest(a, "", "", "");
@@ -200,7 +204,7 @@ contract Showtie is OwnerIsCreator, CCIPReceiver {
         crossChainAttestationIds[key] = crossChainAttestationId;
     }
 
-    function approveInvitation(uint256 dappsId, address invitor, bytes memory captchaSignature)
+    function approveInvitation(uint256 dappsId, address inviter, bytes memory captchaSignature)
         external
         returns (uint64)
     {
@@ -214,7 +218,7 @@ contract Showtie is OwnerIsCreator, CCIPReceiver {
         console.logBytes32(hashedMessage);
         require(verifyECDSA(hashedMessage, captchaSignature, captchaSigner));
 
-        uint64 crossChainAttestationId = getCrossChainAttestationId(invitor, dappsId);
+        uint64 crossChainAttestationId = getCrossChainAttestationId(inviter, dappsId);
         uint64 sourceChainSelector = dappsIdToChainSelector[dappsId];
 
         bytes[] memory recipients = new bytes[](1);
@@ -229,7 +233,9 @@ contract Showtie is OwnerIsCreator, CCIPReceiver {
             dataLocation: DataLocation.ONCHAIN,
             revoked: false,
             recipients: recipients,
-            data: abi.encode(msg.sender, invitor, dappsId, captchaSignature, sourceChainSelector, uint256(chainSelector))
+            data: abi.encode(
+                msg.sender, inviter, dappsId, captchaSignature, uint256(sourceChainSelector), uint256(chainSelector)
+            )
         });
         uint64 attestationId = spInstance.attest(a, "", "", "");
 

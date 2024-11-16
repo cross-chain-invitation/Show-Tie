@@ -48,21 +48,3 @@ contract callCCIP is Script {
         vm.stopBroadcast();
     }
 }
-
-contract receiveText is Script {
-    function run() public {
-        // RPC通信を開始
-        vm.startBroadcast();
-
-        // 既存のデプロイ済みShowtieコントラクトのアドレスを設定
-        address showtieAddress = 0x900E61f9CF646453aa208e423372B87FA0C53846; // 適切なアドレスに置き換える
-        Showtie showtie = Showtie(showtieAddress);
-
-        // getLastReceivedText関数を呼び出して返り値を取得
-
-        // コンソールに出力
-
-        // RPC通信を終了
-        vm.stopBroadcast();
-    }
-}
