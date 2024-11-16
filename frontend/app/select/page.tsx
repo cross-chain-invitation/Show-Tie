@@ -6,18 +6,18 @@ import { Input } from '@/components/ui/input';
 import React from 'react';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { createWalletClient, encodePacked, keccak256, http, decodeAbiParameters } from 'viem';
+import { encodePacked, keccak256, decodeAbiParameters } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import data from '@/public/data.json';
-import { useAccount, useSignMessage, useChainId, useDisconnect, useWriteContract } from 'wagmi';
+import { useAccount, useSignMessage, useChainId, useDisconnect, useSwitchChain } from 'wagmi';
 import { writeContract } from '@wagmi/core';
 import HCaptcha from '@hcaptcha/react-hcaptcha';
 import ERC20ABI from '@/src/abi/ERC20.json';
 import { IndexService } from "@ethsign/sp-sdk";
-import { useSwitchChain } from 'wagmi'
-import {wagmiConfig} from '@/components/Providers';
+import { wagmiConfig } from '@/components/Providers';
+
 
 const SelectPage = () => {
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
@@ -33,27 +33,23 @@ const SelectPage = () => {
   const [hcaptchaToken, setHcaptchaToken] = useState<string | null>(null);
   const { disconnect } = useDisconnect();
   const { chains, switchChain } = useSwitchChain()
+  const [showChainButtons, setShowChainButtons] = useState(false);
+  const [inviterChainId, setInviterChainId] = useState('');
+  const [inviteeChainId, setInviteeChainId] = useState('');
 
-  console.log(chains)
-
-  async function queryAttestations() {
+  async function queryAttestations(inviterAttestationId: string, inviteeAttestationId: string, inviterChainId: string, inviteeChainId: string) {
     const indexService = new IndexService("testnet");
-      
-    const attId = `onchain_evm_11155111_0x3f7`;
+  
+    const inviterAttId = `onchain_evm_${inviterChainId}_${inviterAttestationId}`;
+    const inviteeAttId = `onchain_evm_${inviteeChainId}_${inviteeAttestationId}`;
 
-    // const attId = `onchain_evm_${chainId}_${0xb84}`;
-    // const res = await indexService.queryAttestationList({
-    //   schemaId: "onchain_evm_11155111_0x2ed", // Your full schema's ID
-    //   attester: "0x582BeC27D96Ada0e958048208DD2953a6B642C6e", // Alice's address
-    //   page: 1,
-    //   mode: "onchain", // Data storage location
-    // });
+    console.log('inviterAttId:', inviterAttId);
+    console.log('inviteeAttId:', inviteeAttId);
 
-    console.log('attId:', attId);
-    const res = await indexService.queryAttestation(attId as string);
-    console.log('attestaion:', res?.data);
+    const inviterRes = await indexService.queryAttestation(inviterAttId as string);
+    console.log('inviterAttestation:', inviterRes?.data);
 
-    const values = decodeAbiParameters(
+    const inviterValues = decodeAbiParameters(
       [
         { name: 'inviter', type: 'address' },
         { name: 'signature', type: 'bytes' },
@@ -61,16 +57,42 @@ const SelectPage = () => {
         { name: 'originalChain', type: 'uint256' },
         { name: 'targetChain', type: 'uint256' },
       ],
-      res?.data as `0x${string}`,
+      inviterRes?.data as `0x${string}`,
     )
 
-    console.log('values:', values);
-    console.log('res:', res);
-    
-    return {
-      success: true,
-      attestations: res?.data,
-    };
+    const inviteeRes = await indexService.queryAttestation(inviteeAttId as string);
+    console.log('inviteeAttestation:', inviteeRes?.data);
+
+    const inviteeValues = decodeAbiParameters(
+      [
+        { name: 'invitee', type: 'address' },
+        { name: 'inviter', type: 'address' },
+        { name: 'dappsId', type: 'uint256' },
+        { name: 'signature', type: 'bytes' },
+        { name: 'captchaSignature', type: 'bytes' },
+        { name: 'captchaSigner', type: 'address' },
+        { name: 'sourceChainSelector', type: 'uint256' },
+        { name: 'targetChainSelector', type: 'uint256' }
+      ],
+      inviteeRes?.data as `0x${string}`,
+    )
+
+    console.log('inviterValues:', inviterValues);
+    console.log("inviter:", inviterValues[0]);
+
+    console.log('inviteeValues:', inviteeValues);
+    console.log("invitee:", inviteeValues[0]);
+
+    if (inviterValues[0] === inviteeValues[0]) {
+      return {
+        success: true
+      }
+    }
+    else {
+      return {
+        success: false
+      }
+    }
   }
   
   const handleInviterSubmit  = async (event: React.FormEvent) => {
@@ -235,27 +257,41 @@ const SelectPage = () => {
         return;
       }
 
-      // mint reward
-      const transaction = await writeContract(wagmiConfig, {
-        abi: ERC20ABI,
-        address: '0x7BD72b6D118F763832185744Ee054A550B6eb4cf',
-        functionName: 'mint',
-        args: ['0xa97999f603247570fa688f40aAeAef7A90676254', BigInt(10)],
-      });
-      
-      console.log('transaction:', transaction);
-      toast.success(
-        `Send Reward Successfully!!!`
-      );
-      toast.success(
-          `https://base-sepolia.blockscout.com/${transaction}/`
-      );
+      if (!inviterChainId) {
+        toast.error('Please Enter Inviter Chain Id');
+        return;
+      }
 
-      const res = await queryAttestations();
+      if (!inviteeChainId) {
+        toast.error('Please Enter Invitee Chain Id');
+        return;
+      }
+
+
+      const res = await queryAttestations(inviterAttestationId, inviteeAttestationId, inviterChainId, inviteeChainId);
 
       console.log('res:', res);
+      console.log('res.success:', res.success);
 
-      toast.success('Send Reward Successfully!!!');
+      if (res.success) {
+        toast.success('Send Reward Successfully!!!');
+
+        // mint reward
+        const transaction = await writeContract(wagmiConfig, {
+          abi: ERC20ABI,
+          address: '0x7BD72b6D118F763832185744Ee054A550B6eb4cf',
+          functionName: 'mint',
+          args: ['0xa97999f603247570fa688f40aAeAef7A90676254', BigInt(10)],
+        });
+        
+        console.log('transaction:', transaction);
+        toast.success(
+          `https://base-sepolia.blockscout.com/${transaction}/`
+        );
+      }
+      else {
+        toast.error('Send Reward Failed');
+      }
       
     } catch (error) {
       toast.error(`Error: ${error instanceof Error ? error.message : String(error)}`);
@@ -271,19 +307,16 @@ const SelectPage = () => {
   };
 
 
-  useEffect(() => {
-    console.log('chainId');
-    console.log(chainId);
-    if (!address) {
-      router.push('/');
-    }
-  }, [chainId]);
-
   const handleSelect = (option: string) => {
     setSelectedOption(option);
     setTimeout(() => {
       setShowForm(true);
     }, 100);
+  };
+
+  const handleDisconnect = () => {
+    disconnect();
+    router.push('/');
   };
 
   const renderForm = () => {
@@ -368,10 +401,24 @@ const SelectPage = () => {
               required
             />
             <Input
+              placeholder="Inviter Chain Id"
+              className="bg-white/10 border-white/20 text-white"
+              value={inviterChainId}
+              onChange={(e) => setInviterChainId(e.target.value)}
+              required
+            />
+            <Input
               placeholder="Invitee Attestation Id"
               className="bg-white/10 border-white/20 text-white"
               value={inviteeAttestationId}
               onChange={(e) => setInviteeAttestationId(e.target.value)}
+              required
+            />
+            <Input
+              placeholder="Invitee Chain Id"
+              className="bg-white/10 border-white/20 text-white"
+              value={inviteeChainId}
+              onChange={(e) => setInviteeChainId(e.target.value)}
               required
             />
             <Button
@@ -437,39 +484,69 @@ const SelectPage = () => {
                   Dapps
                 </Button>
               </motion.div>
+              <div className="mb-4"></div>
             </div>
           )}
 
           {renderForm()}
 
-          <div className="flex space-x-4">
-            {chains.map((chain) => (
-              <button 
-                key={chain.id} 
-                onClick={async () => {
-                  try {
-                    console.log('chainId:', chain.id);
-                    await switchChain({ chainId: chain.id });
-                    console.log(`Switched to chain: ${chain.name}`);
-                  } catch (error) {
-                    console.error(`Failed to switch chain: ${error instanceof Error ? error.message : String(error)}`);
+          <div className="flex justify-center space-x-2">
+            <button
+              onClick={() => setShowChainButtons(!showChainButtons)}
+              className="px-4 py-2 bg-gray-500 text-white font-semibold rounded-lg shadow-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-75"
+            >
+              ▼
+            </button>
+            {showChainButtons && (
+              <>
+                {chains.map((chain) => {
+                  let bgColor;
+                  switch (chain.name.toLowerCase()) {
+                    case 'base sepolia':
+                      bgColor = 'bg-blue-500';
+                      break;
+                    case 'sepolia':
+                      bgColor = 'bg-gray-500';
+                      break;
+                    case 'alfajores':
+                      bgColor = 'bg-yellow-500';
+                      break;
+                    case 'scroll sepolia':
+                      bgColor = 'bg-orange-500';
+                      break;
+                    default:
+                      bgColor = 'bg-blue-500';
                   }
-                }}
-                className="px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75"
-              >
-                {chain.name}
-              </button>
-            ))}
+                  return (
+                    <button
+                      key={chain.id}
+                      onClick={async () => {
+                        try {
+                          console.log('chainId:', chain.id);
+                          await switchChain({ chainId: chain.id });
+                          console.log(`Switched to chain: ${chain.name}`);
+                        } catch (error) {
+                          console.error(`Failed to switch chain: ${error instanceof Error ? error.message : String(error)}`);
+                        }
+                      }}
+                      className={`flex-1 px-4 py-2 ${bgColor} text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75`}
+                    >
+                      {chain.name}
+                    </button>
+                  );
+                })}
+              </>
+            )}
           </div>
 
           {address && (
-              <Button 
-                onClick={() => disconnect()}
-                className="w-full bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 text-white font-bold py-4 rounded-full text-lg relative overflow-hidden group text-center flex justify-center mt-6"
-              >
-                Logout
-              </Button>
-            )}
+            <Button 
+              onClick={handleDisconnect}
+              className="w-full bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 text-white font-bold py-4 rounded-full text-lg relative overflow-hidden group text-center flex justify-center mt-6"
+            >
+              Logout
+            </Button>
+          )}
         </div>
       </motion.div>
     </div>
