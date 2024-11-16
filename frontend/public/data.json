@@ -13,5 +13,15 @@
     "name": "Sepolia",
     "chainId": 11155111,
     "chainSelectorId": "16015286601757825753"
+  },
+  {
+    "name": "Alfajores",
+    "chainId": 44787,
+    "chainSelectorId": "3552045678561919002"
+  },
+  {
+    "name": "Scroll Sepolia",
+    "chainId": 534351,
+    "chainSelectorId": "2279865765895943307"
   }
 ]
