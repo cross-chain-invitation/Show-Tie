@@ -405,7 +405,7 @@ const SelectPage = () => {
               type="submit"
               className="w-full bg-gradient-to-r from-blue-500 to-cyan-500 text-white p-6 rounded-xl text-lg"
             >
-              Sign Message
+              Approve Invitation
             </Button>
           </form>
         ) : selectedOption === 'dapps' ? (
