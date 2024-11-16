@@ -17,40 +17,21 @@ contract BasicMessageReceiver is CCIPReceiver, Withdraw {
     string latestMessage;
 
     event MessageReceived(
-        bytes32 latestMessageId,
-        uint64 latestSourceChainSelector,
-        address latestSender,
-        string latestMessage
+        bytes32 latestMessageId, uint64 latestSourceChainSelector, address latestSender, string latestMessage
     );
 
     constructor(address router) CCIPReceiver(router) {}
 
-    function _ccipReceive(
-        Client.Any2EVMMessage memory message
-    ) internal override {
+    function _ccipReceive(Client.Any2EVMMessage memory message) internal override {
         latestMessageId = message.messageId;
         latestSourceChainSelector = message.sourceChainSelector;
         latestSender = abi.decode(message.sender, (address));
         latestMessage = abi.decode(message.data, (string));
 
-        emit MessageReceived(
-            latestMessageId,
-            latestSourceChainSelector,
-            latestSender,
-            latestMessage
-        );
+        emit MessageReceived(latestMessageId, latestSourceChainSelector, latestSender, latestMessage);
     }
 
-    function getLatestMessageDetails()
-        public
-        view
-        returns (bytes32, uint64, address, string memory)
-    {
-        return (
-            latestMessageId,
-            latestSourceChainSelector,
-            latestSender,
-            latestMessage
-        );
+    function getLatestMessageDetails() public view returns (bytes32, uint64, address, string memory) {
+        return (latestMessageId, latestSourceChainSelector, latestSender, latestMessage);
     }
 }

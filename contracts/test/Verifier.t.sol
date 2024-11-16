@@ -30,16 +30,16 @@ contract VerifierTest is Test {
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(signerPrivateKey, ethSignedMessageHash);
         bytes memory signature = abi.encodePacked(r, s, v);
         // 署名を検証
-        bool isValid = verifier.verify(messageHash, signature, signer);
+        bool isValid = verifier.verifyECDSA(messageHash, signature, signer);
         assertTrue(isValid, "Signature verification should succeed for valid signature");
         // 不正な署名を検証
         address fakeSigner = address(0xDEADBEEF);
-        bool isInvalid = verifier.verify(messageHash, signature, fakeSigner);
+        bool isInvalid = verifier.verifyECDSA(messageHash, signature, fakeSigner);
         assertFalse(isInvalid, "Signature verification should fail for invalid signer");
         // メッセージを改ざんして検証
         string memory fakeMessage = "Fake message";
         bytes32 fakeMessageHash = keccak256(abi.encodePacked(fakeMessage));
-        bool isInvalidMessage = verifier.verify(fakeMessageHash, signature, signer);
+        bool isInvalidMessage = verifier.verifyECDSA(fakeMessageHash, signature, signer);
         assertFalse(isInvalidMessage, "Signature verification should fail for invalid message");
     }
 
@@ -52,7 +52,7 @@ contract VerifierTest is Test {
         address correctSigner = 0x9cE87dcbD55f8eD571EFF906584cB6A83B5c2352;
         bytes32 messageHash = keccak256(abi.encodePacked(dappsId, destinationChainSelector));
 
-        bool isValid = verifier.verify(messageHash, signature, correctSigner);
+        bool isValid = verifier.verifyECDSA(messageHash, signature, correctSigner);
 
         assertTrue(isValid, "Signature verification should succeed with correct signer");
     }
