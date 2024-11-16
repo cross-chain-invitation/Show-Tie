@@ -1,13 +1,7 @@
-'use client';
-
 import localFont from 'next/font/local';
 import React from 'react';
 import './globals.css';
-import { WagmiProvider, createConfig, http } from 'wagmi';
-import { baseSepolia } from 'wagmi/chains';
-import { coinbaseWallet } from 'wagmi/connectors';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { metaMask } from '@wagmi/connectors'
+import Providers from '@/components/Providers'; // パスを適宜調整してください
 
 const geistSans = localFont({
   src: './fonts/GeistVF.woff',
@@ -20,38 +14,15 @@ const geistMono = localFont({
   weight: '100 900',
 });
 
-const wagmiConfig = createConfig({
-  chains: [baseSepolia],
-  connectors: [
-    metaMask(),
-    coinbaseWallet({
-      appName: 'onchainkit',
-    }),
-  ],
-  ssr: true,
-  transports: {
-    [baseSepolia.id]: http(),
-  },
-});
-
-// QueryClientの作成（コンポーネントの外で）
-const queryClient = new QueryClient();
-
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <QueryClientProvider client={queryClient}>
-          <WagmiProvider config={wagmiConfig}>
-            {children}
-          </WagmiProvider>
-        </QueryClientProvider>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

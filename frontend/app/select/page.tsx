@@ -6,28 +6,54 @@ import { Input } from '@/components/ui/input';
 import React from 'react';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { encodePacked, keccak256 } from 'viem';
+import { createWalletClient, encodePacked, keccak256, http } from 'viem';
+import { privateKeyToAccount } from 'viem/accounts';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import data from '@/public/data.json';
-import { useAccount, useSignMessage, useChainId } from 'wagmi';
-import { createPublicClient, http } from 'viem';
+import { useAccount, useSignMessage, useChainId, useDisconnect } from 'wagmi';
+import { baseSepolia } from 'viem/chains';
+import HCaptcha from '@hcaptcha/react-hcaptcha';
 
 export default function SelectPage() {
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
-  const [isInitialized, setIsInitialized] = useState(false);
   const [dappsId, setDappsId] = useState('');
   const [inviterAddress, setInviterAddress] = useState('');
   const router = useRouter();
   const { signMessageAsync } = useSignMessage();
   const chainId = useChainId();
   const { address, isConnected } = useAccount();
+  const [hcaptchaToken, setHcaptchaToken] = useState<string | null>(null);
+  const { disconnect } = useDisconnect();
 
-  const handleSign = async () => {
+  useEffect(() => {
+    if (!hcaptchaToken) {
+      console.error("hCaptcha token is not available. Retrying...");
+
+      const timeout = setTimeout(() => {
+        if (!hcaptchaToken) {
+          console.error("hCaptcha token is still not available.");
+        } else {
+          console.log("hCaptcha token is now available.");
+        }
+      }, 3000);
+  
+      return () => clearTimeout(timeout);
+    } else {
+      console.log('hcaptchaToken:', hcaptchaToken);
+      console.log("hCaptcha token is available.");
+    }
+  }, [hcaptchaToken]);
+
+  
+  const handleInviterSubmit  = async (event: React.FormEvent) => {
+    event.preventDefault();
+
     try {
+      // Existing signature logic
       if (!isConnected) {
-        toast.error('ウォレットを接続してください');
+        toast.error('Please connect your wallet');
         return;
       }
 
@@ -38,7 +64,6 @@ export default function SelectPage() {
 
       const chainSelectorId = getChainSelectorIdByChainId(chainId.toString());
 
-  
       console.log('chainSelectorId:', chainSelectorId);
       console.log('address:', address);
 
@@ -49,49 +74,108 @@ export default function SelectPage() {
         return;
       }
 
-      // パックされたメッセージを作成
+      // Create packed message
       const packedMessage = encodePacked(
         ['uint256', 'uint64'],
         [BigInt(dappsId), BigInt(chainSelectorId)]
       );
 
-      // ECDSA署名用のメッセージハッシュを作成
+      // Create message hash for ECDSA signature
       const messageHash = keccak256(packedMessage);
       
-      // プレフィックスを追加してEthereumの署名メッセージを作成
-      // const prefixedMessage = `\x19Ethereum Signed Message:\n32${messageHash.slice(2)}`;
-      // const prefixedMessageHash = keccak256(prefixedMessage);
 
-      // ECDSA署名を生成
+      // Generate ECDSA signature
       const signature = await signMessageAsync({
         account: address, 
         message: { raw: messageHash }
       });
+
       console.log('signature:', signature);
 
       console.log('ECDSA signature:', signature);
-      toast.success('ECDSA署名が生成されました');
+      toast.success('ECDSA signature generated successfully');
       
     } catch (error) {
-      toast.error(`署名エラー: ${error instanceof Error ? error.message : String(error)}`);
+      toast.error(`Error: ${error instanceof Error ? error.message : String(error)}`);
     }
   };
 
+  const handleInviteeSubmit  = async (event: React.FormEvent) => {
+    event.preventDefault();
+
+    try {
+      if (!hcaptchaToken) {
+        console.error('hCaptcha token is not available');
+        toast.error('hCaptcha is not ready');
+        return;
+      }
+
+      // Verify hCaptcha token
+      const verificationResponse = await fetch('/api/hcaptcha', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ token: hcaptchaToken }),
+      });
+
+      console.log(verificationResponse);
+
+      if (!verificationResponse.ok) {
+        toast.error('hCaptcha verification failed');
+        return;
+      }
+
+      // Existing signature logic
+      if (!isConnected) {
+        toast.error('Please connect your wallet');
+        return;
+      }
+
+      if (!dappsId) {
+        toast.error('Please Enter Dapps ID');
+        return;
+      }
+
+      // Create packed message
+      const packedMessage = encodePacked(
+        ['address', 'uint256'],
+        [address as `0x${string}`, BigInt(dappsId)]
+      );
+
+      // Create message hash for ECDSA signature
+      const messageHash = keccak256(packedMessage);
+
+      console.log('messageHash:', messageHash);
+
+      console.log('process.env.WALLET_PRIVATE_KEY:', process.env.NEXT_PUBLIC_WALLET_PRIVATE_KEY);
+
+      const account = privateKeyToAccount(process.env.NEXT_PUBLIC_WALLET_PRIVATE_KEY as `0x${string}`);
+
+      console.log('account:', account);
+
+      const signature = await signMessageAsync({
+        account: account,
+        message: { raw: messageHash }
+      });
+
+      console.log('signature:', signature);
+
+      console.log('ECDSA signature:', signature);
+      toast.success('ECDSA signature generated successfully');
+      
+    } catch (error) {
+      toast.error(`Error: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  };
+
+
   useEffect(() => {
-    // const checkConnection = async () => {
-    //   const isConnected = localStorage.getItem('isConnected') === 'true';
-    //   if (isConnected && !primaryWallet) {
-    //     setShowAuthFlow(true);
-    //   }
-    //   setIsInitialized(true);
-    // };
-
-    // checkConnection();
-
-    // if (!primaryWallet) {
-    //   router.push('/');
-    // }
-  }, []);
+    console.log(address);
+    if (!address) {
+      router.push('/');
+    }
+  }, [address]);
 
   const handleSelect = (option: string) => {
     setSelectedOption(option);
@@ -113,7 +197,7 @@ export default function SelectPage() {
           <></>
         ) : selectedOption === 'inviter' ? (
           // inviter form
-          <>
+          <form onSubmit={handleInviterSubmit} className="space-y-4">
             <h2 className="text-xl font-bold text-white mb-4">
               Enter Required Information
             </h2>
@@ -122,31 +206,71 @@ export default function SelectPage() {
               className="bg-white/10 border-white/20 text-white"
               value={dappsId}
               onChange={(e) => setDappsId(e.target.value)}
+              required
             />
             <Button
-              onClick={handleSign}
+              type="submit"
               className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 text-white p-6 rounded-xl text-lg"
             >
               Sign Message
             </Button>
-          </>
-        ) : (
+          </form>
+        ) : selectedOption === 'invitee' ? (
           // invitee form
-          <>
+          <form onSubmit={handleInviteeSubmit} className="space-y-4">
             <h2 className="text-xl font-bold text-white mb-4">
               Enter Required Information
             </h2>
             <Input
               placeholder="dapps_id"
               className="bg-white/10 border-white/20 text-white"
+              value={dappsId}
+              onChange={(e) => setDappsId(e.target.value)}
+              required
             />
             <Input
               placeholder="inviter_address"
               className="bg-white/10 border-white/20 text-white"
+              value={inviterAddress}
+              onChange={(e) => setInviterAddress(e.target.value)}
+              required
             />
-          </>
-        )
-        }
+            <div className="flex justify-center">
+              <HCaptcha
+                sitekey={process.env.NEXT_PUBLIC_HCAPTCHA_SITE_KEY}
+                onVerify={(token) => setHcaptchaToken(token)}
+                theme="dark"
+                size="compact"
+              />
+            </div>
+            <Button
+              type="submit"
+              className="w-full bg-gradient-to-r from-blue-500 to-cyan-500 text-white p-6 rounded-xl text-lg"
+            >
+              Sign Message
+            </Button>
+          </form>
+        ) : selectedOption === 'dapps' ? (
+          // dapps form
+          <form onSubmit={handleDappsSubmit} className="space-y-4">
+            <h2 className="text-xl font-bold text-white mb-4">
+              Enter Dapps Information
+            </h2>
+            <Input
+              placeholder="dapps_id"
+              className="bg-white/10 border-white/20 text-white"
+              value={dappsId}
+              onChange={(e) => setDappsId(e.target.value)}
+              required
+            />
+            <Button
+              type="submit"
+              className="w-full bg-gradient-to-r from-green-500 to-teal-500 text-white p-6 rounded-xl text-lg"
+            >
+              Submit Dapps
+            </Button>
+          </form>
+        ) : null}
       </motion.div>
     );
   };
@@ -193,10 +317,28 @@ export default function SelectPage() {
                   Invitee
                 </Button>
               </motion.div>
+
+              <motion.div whileHover={{ scale: 1.02 }}>
+                <Button
+                  className="w-full bg-gradient-to-r from-green-500 to-teal-500 text-white p-6 rounded-xl text-lg"
+                  onClick={() => handleSelect('dapps')}
+                >
+                  Dapps
+                </Button>
+              </motion.div>
             </div>
           )}
 
           {renderForm()}
+
+          {address && (
+              <Button 
+                onClick={() => disconnect()}
+                className="w-full bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 text-white font-bold py-4 rounded-full text-lg relative overflow-hidden group text-center flex justify-center"
+              >
+                Logout
+              </Button>
+            )}
         </div>
       </motion.div>
     </div>

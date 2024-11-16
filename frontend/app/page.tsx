@@ -2,21 +2,23 @@
 
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
+import { disconnect } from '@wagmi/core';
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import {
   ConnectWallet,
-  Wallet,
-  WalletDropdown,
-  WalletDropdownDisconnect,
+  Wallet
 } from '@coinbase/onchainkit/wallet';
 import {
-  Address,
-  Avatar,
-  Name,
-  Identity,
+  Name
 } from '@coinbase/onchainkit/identity';
 import { useState, useEffect } from 'react';
+import { useAccount } from 'wagmi';
+import { useDisconnect } from 'wagmi'
+import { useConnect } from 'wagmi';
+import { Select } from '@/components/ui/select';
+import { useChainId } from 'wagmi';
+import { useSwitchChain } from 'wagmi'
 
 interface BackgroundElement {
   left: string;
@@ -29,6 +31,20 @@ export default function Home() {
   const router = useRouter();
   const [backgroundElements, setBackgroundElements] = useState<BackgroundElement[]>([]);
   const [hue, setHue] = useState(0);
+  const { address } = useAccount();
+  const { disconnect } = useDisconnect();
+  const chainId = useChainId();
+  const { chains, switchChain } = useSwitchChain()
+
+
+  useEffect(() => {
+    console.log(address);
+    console.log(chainId);
+
+    if (address) {
+      router.push('/select');
+    }
+  }, [address, chainId]);
 
   useEffect(() => {
     setHue(0);
@@ -113,22 +129,36 @@ export default function Home() {
             </motion.h1>
             
             <Wallet>
-              <ConnectWallet 
-                onConnect={() => router.push('/select')}
-                className="w-full bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 text-white font-bold py-4 rounded-full text-lg relative overflow-hidden group"
-              >
-                <Name />
-              </ConnectWallet>
-              <WalletDropdown>
-                <Identity className="px-4 pt-3 pb-2" hasCopyAddressOnClick>
-                  <Avatar />
-                  <Name />
-                  <Address />
-                </Identity>
-                <WalletDropdownDisconnect />
-              </WalletDropdown>
+              {!address && (
+                <ConnectWallet 
+                  onConnect={() => router.push('/select')}
+                  className="w-full bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 text-white font-bold py-4 rounded-full text-lg relative overflow-hidden group text-center flex justify-center"
+                >
+                  Connect Wallet
+                </ConnectWallet>
+              )}
             </Wallet>
+
+            <div className="flex space-x-4">
+              {chains.map((chain) => (
+                <button 
+                  key={chain.id} 
+                  onClick={() => switchChain({ chainId: chain.id })}
+                  className="px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75"
+                >
+                  {chain.name}
+                </button>
+              ))}
+            </div>
             
+            {address && (
+              <Button 
+                onClick={() => disconnect()}
+                className="w-full bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 text-white font-bold py-4 rounded-full text-lg relative overflow-hidden group text-center flex justify-center"
+              >
+                Logout
+              </Button>
+            )}
           </div>
         </motion.div>
       </div>
