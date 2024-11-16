@@ -10,7 +10,7 @@ contract DeployERC20 is Script {
 
         ShowtieERC20 showtieERC20 = new ShowtieERC20();
 
-        console.log("Showtie deployed at:", address(showtieERC20));
+        console.log("Showtie ERC20 deployed at:", address(showtieERC20));
 
         vm.stopBroadcast();
     }
