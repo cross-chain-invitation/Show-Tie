@@ -1,13 +1,13 @@
 'use client';
 
 import { WagmiProvider, createConfig, http } from 'wagmi';
-import { baseSepolia, sepolia } from 'wagmi/chains';
+import { baseSepolia, sepolia, celoAlfajores, scrollSepolia } from 'wagmi/chains';
 import { coinbaseWallet } from 'wagmi/connectors';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { metaMask } from '@wagmi/connectors';
 
 export const wagmiConfig = createConfig({
-  chains: [baseSepolia, sepolia],
+  chains: [baseSepolia, sepolia, celoAlfajores, scrollSepolia],
   connectors: [
     metaMask(),
     coinbaseWallet({
@@ -18,6 +18,8 @@ export const wagmiConfig = createConfig({
   transports: {
     [baseSepolia.id]: http(),
     [sepolia.id]: http(),
+    [celoAlfajores.id]: http(),
+    [scrollSepolia.id]: http(),
   },
 });
 
