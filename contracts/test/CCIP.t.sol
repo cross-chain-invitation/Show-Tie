@@ -12,13 +12,14 @@ import {ISPHook} from "@ethsign/sign-protocol-evm/src/interfaces/ISPHook.sol";
 import {Attestation} from "@ethsign/sign-protocol-evm/src/models/Attestation.sol";
 import {DataLocation} from "@ethsign/sign-protocol-evm/src/models/DataLocation.sol";
 
-
 contract Example06Test is Test {
     CCIPLocalSimulator public ccipLocalSimulator;
     Showtie public showtie;
     Showtie public showtie2;
     BasicMessageSender public sender;
     BasicMessageReceiver public receiver;
+
+    address inviter = 0x9cE87dcbD55f8eD571EFF906584cB6A83B5c2352;
 
     address signProtocol = address(1);
     uint64 inviterSchemaId = 1;
@@ -36,27 +37,37 @@ contract Example06Test is Test {
         ccipLocalSimulator = new CCIPLocalSimulator();
         mockSignProtocol = new MockSignProtocol();
 
-        (
-            uint64 chainSelector,
-            IRouterClient sourceRouter,
-            IRouterClient destinationRouter,
-            ,
-            LinkToken link,
-            ,
+        (uint64 chainSelector, IRouterClient sourceRouter, IRouterClient destinationRouter,, LinkToken link,,) =
+            ccipLocalSimulator.configuration();
 
-        ) = ccipLocalSimulator.configuration();
-
-        showtie = new Showtie(address(mockSignProtocol), address(sourceRouter), address(link), chainSelector, inviterSchemaId, inviteeSchemaId, crosschainSchemaId);
-        showtie2 = new Showtie(address(mockSignProtocol), address(sourceRouter), address(link), chainSelector, inviterSchemaId, inviteeSchemaId, crosschainSchemaId2);
+        showtie = new Showtie(
+            address(mockSignProtocol),
+            address(sourceRouter),
+            address(link),
+            chainSelector,
+            inviterSchemaId,
+            inviteeSchemaId,
+            crosschainSchemaId
+        );
+        showtie2 = new Showtie(
+            address(mockSignProtocol),
+            address(sourceRouter),
+            address(link),
+            chainSelector,
+            inviterSchemaId,
+            inviteeSchemaId,
+            crosschainSchemaId2
+        );
         sender = new BasicMessageSender(address(sourceRouter), address(link));
         receiver = new BasicMessageReceiver(address(destinationRouter));
 
         destinationChainSelector = chainSelector;
-
     }
 
     function test_sendAndReceiveCrossChainMessagePayFeesInLink() external {
         ccipLocalSimulator.requestLinkFromFaucet(address(showtie), 5 ether);
+
+        vm.prank(inviter);
 
         showtie.createInvitation(
             destinationChainSelector,
@@ -73,12 +84,11 @@ contract Example06Test is Test {
 }
 
 contract MockSignProtocol {
-    function attest(
-        Attestation calldata, 
-        string calldata,
-        bytes calldata,
-        bytes calldata
-    ) external pure returns (uint64) {
+    function attest(Attestation calldata, string calldata, bytes calldata, bytes calldata)
+        external
+        pure
+        returns (uint64)
+    {
         return 42;
     }
 }

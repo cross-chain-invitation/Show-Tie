@@ -23,7 +23,11 @@ contract Verifier {
     }
 
     // 署名の検証を行う関数
-    function verify(bytes32 messageHash, bytes memory signature, address expectedSigner) public pure returns (bool) {
+    function verifyECDSA(bytes32 messageHash, bytes memory signature, address expectedSigner)
+        external
+        pure
+        returns (bool)
+    {
         // 署名から署名者のアドレスを回復
         address recoveredSigner = verifySignature(messageHash, signature);
         // 期待する署名者と一致するか確認

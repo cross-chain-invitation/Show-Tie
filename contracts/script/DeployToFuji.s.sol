@@ -59,10 +59,8 @@ contract receiveText is Script {
         Showtie showtie = Showtie(showtieAddress);
 
         // getLastReceivedText関数を呼び出して返り値を取得
-        string memory lastText = showtie.getLastReceivedText();
 
         // コンソールに出力
-        console.log("Last received text:", lastText);
 
         // RPC通信を終了
         vm.stopBroadcast();
