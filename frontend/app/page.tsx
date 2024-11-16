@@ -44,7 +44,8 @@ export default function Home() {
     if (address) {
       router.push('/select');
     }
-  }, [address, chainId]);
+  }, [address]);
+
 
   useEffect(() => {
     setHue(0);

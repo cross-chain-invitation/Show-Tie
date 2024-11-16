@@ -8,6 +8,8 @@ export async function POST(request: Request) {
 
     // Create form data
     const data = new URLSearchParams();
+    data.append('secret', secret);
+    data.append('response', token);
 
     // Send POST request with form data in the body
     const response = await axios.post('https://hcaptcha.com/siteverify', data, {
