@@ -19,7 +19,7 @@ import { IndexService } from "@ethsign/sp-sdk";
 import { useSwitchChain } from 'wagmi'
 import {wagmiConfig} from '@/components/Providers';
 
-export default function SelectPage() {
+const SelectPage = () => {
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [dappsId, setDappsId] = useState('');
@@ -51,7 +51,7 @@ export default function SelectPage() {
 
     console.log('attId:', attId);
     const res = await indexService.queryAttestation(attId as string);
-    console.log('attestaion:', res.data);
+    console.log('attestaion:', res?.data);
 
     const values = decodeAbiParameters(
       [
@@ -61,7 +61,7 @@ export default function SelectPage() {
         { name: 'originalChain', type: 'uint256' },
         { name: 'targetChain', type: 'uint256' },
       ],
-      res.data,
+      res?.data as `0x${string}`,
     )
 
     console.log('values:', values);
@@ -69,7 +69,7 @@ export default function SelectPage() {
     
     return {
       success: true,
-      attestations: res.rows,
+      attestations: res?.data,
     };
   }
   
@@ -262,6 +262,14 @@ export default function SelectPage() {
     }
   };
 
+  const getChainSelectorIdByChainId = (
+    chainId: string
+  ): bigint | undefined => {
+    const chainData = data.find((item) => item.chainId === parseInt(chainId));
+    console.log('chainData', chainData);
+    return chainData ? BigInt(chainData.chainSelectorId) : undefined;
+  };
+
 
   useEffect(() => {
     console.log('chainId');
@@ -330,12 +338,14 @@ export default function SelectPage() {
               required
             />
             <div className="flex justify-center">
-              <HCaptcha
-                  sitekey={process.env.NEXT_PUBLIC_HCAPTCHA_SITE_KEY}
-                  onVerify={(token) => setHcaptchaToken(token)}
-                  theme="dark"
-                  size="compact"
-                />
+              {process.env.NEXT_PUBLIC_HCAPTCHA_SITE_KEY && (
+                <HCaptcha
+                    sitekey={process.env.NEXT_PUBLIC_HCAPTCHA_SITE_KEY}
+                    onVerify={(token) => setHcaptchaToken(token)}
+                    theme="dark"
+                    size="compact"
+                  />
+              )}
             </div>
             <Button
               type="submit"
@@ -466,10 +476,4 @@ export default function SelectPage() {
   );
 }
 
-export const getChainSelectorIdByChainId = (
-  chainId: string
-): bigint | undefined => {
-  const chainData = data.find((item) => item.chainId === parseInt(chainId));
-  console.log('chainData', chainData);
-  return chainData ? BigInt(chainData.chainSelectorId) : undefined;
-};
+export default SelectPage;

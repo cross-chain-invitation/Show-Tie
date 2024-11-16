@@ -4,7 +4,7 @@ import axios from 'axios';
 export async function POST(request: Request) {
   try {
     const { token } = await request.json();
-    const secret = process.env.HCAPTCHA_SECRET_KEY;
+    const secret = process.env.HCAPTCHA_SECRET_KEY || 'default_secret_key';
 
     // Create form data
     const data = new URLSearchParams();
