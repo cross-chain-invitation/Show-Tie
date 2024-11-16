@@ -7,7 +7,7 @@ import {LinkTokenInterface} from "@chainlink/contracts/src/v0.8/shared/interface
 
 contract DeployToSepolia is Script {
     LinkTokenInterface private s_linkToken = LinkTokenInterface(0x779877A7B0D9E8603169DdbD7836e478b4624789);
-    address immutable TARGET_CONTRACT = 0x1952FE5d7460328B2C31511c05EdA78F39aB0A42; //Base Sepolia
+    address immutable TARGET_CONTRACT = 0x6640f61BeEF7cEd4eE72A95a48d1Ce65b8ac5762; //Base Sepolia
 
     function run() public {
         vm.startBroadcast();
@@ -39,7 +39,7 @@ contract DeployToSepolia is Script {
 }
 
 contract callCCIP is Script {
-    address immutable TARGET_CONTRACT = 0x1952FE5d7460328B2C31511c05EdA78F39aB0A42; //Base Sepolia
+    address immutable TARGET_CONTRACT = 0x6640f61BeEF7cEd4eE72A95a48d1Ce65b8ac5762; //Base Sepolia
 
     function run() public {
         address showtieAddress = 0x53D1D42c154934FF03Ed26579BB88C9A4834F698; //Sepolia Contract

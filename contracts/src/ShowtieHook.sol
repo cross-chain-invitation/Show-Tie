@@ -4,6 +4,8 @@ pragma solidity ^0.8.26;
 import {IERC20} from "@openzeppelin/contracts/interfaces/IERC20.sol";
 import {ISPHook} from "@ethsign/sign-protocol-evm/src/interfaces/ISPHook.sol";
 import {Showtie} from "./Showtie.sol";
+import { Attestation } from "@ethsign/sign-protocol-evm/src/models/Attestation.sol";
+import { ISP } from "@ethsign/sign-protocol-evm/src/interfaces/ISP.sol";
 
 contract Verifier {
     function verifySignature(bytes32 messageHash, bytes memory signature) public pure returns (address) {
@@ -36,9 +38,10 @@ contract ShowtieHook is ISPHook, Verifier {
     function didReceiveAttestation(
         address, // attester
         uint64, // schemaId
-        uint64, //attestationId
-        bytes calldata data // extraData
+        uint64 attestationId, //attestationId
+        bytes calldata // extraData
     ) external payable {
+      Attestation memory attestation = ISP(msg.sender).getAttestation(attestationId);
         (
             address invitee,
             address inviter,
@@ -47,7 +50,7 @@ contract ShowtieHook is ISPHook, Verifier {
             bytes memory captchaSignature,
             address captchaSigner,
             ,
-        ) = abi.decode(data, (address, address, uint256, bytes, bytes, address, uint256, uint256));
+        ) = abi.decode(attestation.data, (address, address, uint256, bytes, bytes, address, uint256, uint256));
 
         bytes32 messageHash = keccak256(abi.encodePacked(inviter, dappsId));
         _verifyECDSA(messageHash, inviteeSignature, invitee);
