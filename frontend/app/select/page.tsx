@@ -85,9 +85,9 @@ const SelectPage = () => {
     console.log("inviter:", inviterValues[0]);
 
     console.log('inviteeValues:', inviteeValues);
-    console.log("invitee:", inviteeValues[0]);
+    console.log("invitee:", inviteeValues[1]);
 
-    if (inviterValues[0] === inviteeValues[0]) {
+    if (inviterValues[0] === inviteeValues[1]) {
       return {
         success: true
       }
