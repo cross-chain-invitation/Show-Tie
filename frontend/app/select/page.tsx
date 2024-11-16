@@ -18,6 +18,9 @@ import ERC20ABI from '@/src/abi/ERC20.json';
 import ShowtieABI from '@/src/abi/Showtie.json';
 import { IndexService } from "@ethsign/sp-sdk";
 import { wagmiConfig } from '@/components/Providers';
+import {
+  Name
+} from '@coinbase/onchainkit/identity';
 
 
 const SelectPage = () => {
@@ -558,12 +561,18 @@ const SelectPage = () => {
           </div>
 
           {address && (
-            <Button 
-              onClick={handleDisconnect}
-              className="w-full bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 text-white font-bold py-4 rounded-full text-lg relative overflow-hidden group text-center flex justify-center mt-6"
-            >
-              Logout
-            </Button>
+            <>
+              <Name 
+                address={address} 
+                className="w-full bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 text-white font-bold py-4 rounded-full text-lg relative overflow-hidden group text-center flex justify-center mt-6"
+            /> 
+              <Button 
+                onClick={handleDisconnect}
+                className="w-full bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 text-white font-bold py-4 rounded-full text-lg relative overflow-hidden group text-center flex justify-center mt-6"
+              >
+                Logout
+              </Button>
+            </>
           )}
         </div>
       </motion.div>
