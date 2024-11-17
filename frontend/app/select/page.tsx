@@ -142,7 +142,7 @@ const SelectPage = () => {
 
       const createInvitationTx = await writeContract(wagmiConfig, {
         abi: ShowtieABI,
-        address: contractAddress as `0x${string}`,
+        address: "0x892a7880F0Ae0Ac74A27f14aCe0cB27b9b3d041A",
         functionName: 'createInvitation',
         args: [
           // BigInt('10344971235874465080'), //To Base
@@ -307,7 +307,7 @@ const SelectPage = () => {
         // mint reward
         const transaction = await writeContract(wagmiConfig, {
           abi: ERC20ABI,
-          address: contractAddress as `0x${string}`,
+          address: "0x7BD72b6D118F763832185744Ee054A550B6eb4cf",
           functionName: 'mint',
           args: ['0xa97999f603247570fa688f40aAeAef7A90676254', BigInt(10)],
         });
@@ -383,7 +383,7 @@ const SelectPage = () => {
               type="submit"
               className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 text-white p-6 rounded-xl text-lg"
             >
-              Sign Message
+              Create Invitation
             </Button>
           </form>
         ) : selectedOption === 'invitee' ? (
