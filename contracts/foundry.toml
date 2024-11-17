@@ -3,4 +3,17 @@ src = "src"
 out = "out"
 libs = ["lib"]
 
+[etherscan]
+celo-alfajores = { key = "", url = "https://api-alfajores.celoscan.io/api"}
+celo = { key = "$", url = "https://api.celoscan.io/api"}
+scroll-sepolia = { key = "", url = "https://api-sepolia.scrollscan.com/api"}
+base-sepolia = {key = "", url = "https://api.basescan.org/api"}
+
+
+[rpc_endpoints]
+celo-alfajores = "https://alfajores-forno.celo-testnet.org"
+celo = "https://forno.celo.org"
+scroll-sepolia = "https://sepolia-rpc.scroll.io/"
+base-sepolia = "https://sepolia.base.org"
+
 # See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
