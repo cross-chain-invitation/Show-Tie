@@ -1,8 +1,69 @@
 # Show-Tie : Verifiable Cross-Chain Invitation & Social Graph Protocol
 
+## Demo Txs 
+Create invitation from Base => Sepolia, accept invitation on Sepolia and generate attestations
+
+**1. createInvitation on Base Sepolia**
+https://sepolia.basescan.org/tx/0xa6291300e3c9e7c602be76300a3b5dc0f3c40aba1d3ed5c196c295b217882aca
+event attestation ID => 3403 => 0xd4b
+
+**2. Sign Scan (Inviter Attestation)** 
+https://testnet-scan.sign.global/attestation/onchain_evm_84532_0xd4b
+
+**3. CCIP Scan (Base => Sepolia)**
+https://ccip.chain.link/#/side-drawer/msg/0xaf009ceae978638b6aba46d6a0371cf1d0a51e18c4e55353d2c9efd285e1e3e8
+
+**4. Transaction Hash of accept Invitation**
+https://sepolia.etherscan.io/tx/0x3621aeb1151cfcd4385dafb932e9b51a8686b10d0cc4b3459d2ec6ff82c75dae
+event attestation ID => 1052 => 0x41c
+
+**5. Sign Scan (Invitee & Captcha)**
+https://testnet-scan.sign.global/attestation/onchain_evm_11155111_0x41c
+
+
 ## How It's Made
 
 Our project revolves around creating a secure, verifiable, and cross-chain invitation system for decentralized applications (DApps). We've integrated captcha authentication with attestation mechanisms to ensure both security against bots and verifiable user relationships. Here's how we built it:
+
+#### Chain A Implementation
+```mermaid
+sequenceDiagram
+    participant Inviter
+    participant Client
+    participant SmartContract
+    participant SignProtocol
+    participant CCIP
+    participant TargetChain
+
+    Inviter ->> Client: Select DApps ID and call the createInvitation function
+    Client ->> SmartContract: Execute the createInvitation function
+    SmartContract ->> SignProtocol: Request to create attestation
+    SignProtocol -->> SmartContract: Return attestation ID
+    SmartContract ->> CCIP: Execute send function<br>(attestation ID, signature, wallet address, DApps ID)
+    CCIP ->> TargetChain: Send data via CCIPsend
+    TargetChain -->> Client: Return success response
+```
+
+### Chain B Implementation
+```mermaid
+sequenceDiagram
+    participant CCIP
+    participant SignProtocolContract
+    participant SmartContract
+    participant Client
+    participant Invitee
+    
+    
+    CCIP ->> SmartContract: Receive Cross-Chain message from the chain A
+    SmartContract ->> SmartContract: Verify Inviter's Signature
+    SmartContract　->> SmartContract:Store invitation data
+    Invitee ->> Client:Connect Wallet、Pass the Capthca authentication
+    Our Wallet ->> Client: Generate Signature of captcha authentication
+    Client ->> SmartContract: Call approveInvitation function
+    SmartContract　->> SignProtocolContract: Create invitee attestation
+    SignProtocol ->> SchemaHook : Verify the invitee's signature and captcha authentication
+    SignProtocolContract ->> Client: Return Invitee attestation ID
+```
 
 ### Overall Invitation Flow
 
@@ -59,22 +120,13 @@ CCIP enables seamless communication and invitation transmission across multiple 
 ----------------------------
 By integrating these technologies, we've developed a system that not only secures against bot interactions but also creates verifiable relationships between users that can be trusted and utilized by the broader blockchain community. Our approach facilitates a more connected and secure ecosystem, allowing DApps to expand their reach across chains without compromising on trust or security.
 
-
-Create Invitation on Base Sepolia
-https://base-sepolia.blockscout.com/tx/0xc8b308572af96b1e1a0ca03f0482560021503497d04f61eef15ee0f7e79de92d
-
-Accept Invitation on Ethereum Sepolia
-https://eth-sepolia.blockscout.com/tx/0xc138e2279cf23c80ca733c6be13594d0081b35f2da0a851f368a9b1eb615490e
-
-Re: create Invitation
-https://sepolia.basescan.org/tx/0xb30a15fdaa50a2d70aef02717f0f1c598669d6f8739abf604a4b121306d8648a
 ## Contract Addresses
 
 ### Ethereum Sepolia
 
 | Contract       | Address                                    |
 |----------------|--------------------------------------------|
-| Showtie        | `0xe74562223D7ABc995Ab0703697b163431e3A0635` |
+| Showtie        | `0x835f7f0678FF1903D5198B82c9A2eD1F3238D606` |
 | ShowtieHook    | `0x883178d94E7cB18b4e4d077CDd0cEB98d34dAd37` |
 | ShowtieERC20   | `0x6640f61BeEF7cEd4eE72A95a48d1Ce65b8ac5762` |
 
@@ -82,9 +134,26 @@ https://sepolia.basescan.org/tx/0xb30a15fdaa50a2d70aef02717f0f1c598669d6f8739abf
 
 | Contract       | Address                                    |
 |----------------|--------------------------------------------|
-| Showtie        | `0xABF8250bE844d6E88153b688A22D3030a88e42a1` |
+| Showtie        | `0x892a7880F0Ae0Ac74A27f14aCe0cB27b9b3d041A` |
 | ShowtieHook    | `0x23a5ffb86b6c1e51dedb53681449a909a8ce2f53` |
 | ShowtieERC20   | `0x7BD72b6D118F763832185744Ee054A550B6eb4cf` |
+
+### Celo Testnet
+
+| Contract      | Address                                    |
+|---------------|--------------------------------------------|
+| Showtie       | `0x82852a3b2D6d5Cc86fD112dcD6ed34Bc09445846` |
+| ShowtieHook   | `0xD53EA3598F3b2332FB82A132B0Dc7a17ce0E5dB8` |
+| ShowtieERC20  | `0xeB56Ffab8d01a2252D4A07953578b85bE8bdd084` |
+
+### Scroll Sepolia
+
+| Contract      | Address                                    |
+|---------------|--------------------------------------------|
+| Showtie       | `0xD53EA3598F3b2332FB82A132B0Dc7a17ce0E5dB8` |
+| ShowtieHook   | `0x900E61f9CF646453aa208e423372B87FA0C53846` |
+| ShowtieERC20  | `0x82852a3b2D6d5Cc86fD112dcD6ed34Bc09445846` |
+
 
 
 ## Schemas
@@ -95,6 +164,12 @@ https://sepolia.basescan.org/tx/0xb30a15fdaa50a2d70aef02717f0f1c598669d6f8739abf
 
 🌍 **Base Sepolia**  
 [View Schema on SignScan](https://testnet-scan.sign.global/schema/onchain_evm_84532_0x483)
+
+🤎 **Scroll**
+[View Schema on SignScan]([https://testnet-scan.sign.global/schema/onchain_evm_44787_0x33](https://testnet-scan.sign.global/schema/onchain_evm_534351_0x63))
+
+🟡 **Celo**
+[View Schema on SignScan](https://testnet-scan.sign.global/schema/onchain_evm_44787_0x35)
 
 
 | Field Name            | Type      | Description                                                                                      |
@@ -116,6 +191,12 @@ https://sepolia.basescan.org/tx/0xb30a15fdaa50a2d70aef02717f0f1c598669d6f8739abf
 🌍 **Base Sepolia**  
 [View Schema on SignScan](https://testnet-scan.sign.global/schema/onchain_evm_84532_0x41e)
 
+🟡 **Celo**
+[View Schema on SignScan](https://testnet-scan.sign.global/schema/onchain_evm_44787_0x33)
+
+🤎 **Scroll**
+[View Schema on SignScan]([https://testnet-scan.sign.global/schema/onchain_evm_44787_0x33](https://testnet-scan.sign.global/schema/onchain_evm_534351_0x61))
+
 
 | Name           | Type      | Description                                                                                      |
 |----------------|-----------|--------------------------------------------------------------------------------------------------|
@@ -124,20 +205,3 @@ https://sepolia.basescan.org/tx/0xb30a15fdaa50a2d70aef02717f0f1c598669d6f8739abf
 | `dappsId`      | `uint256` | The identifier of the Dapp.                                                                     |
 | `originalChain`| `uint256` | The chain identifier where the invitation was originally created.                               |
 | `targetChain`  | `uint256` | The chain identifier where the invitation was intended to be received (used for cross-chain invitations). |
-
-
-#### Cross-Chain Schema
-🌍 **Base Sepolia**  
-[View Schema on SignScan](https://testnet-scan.sign.global/schema/onchain_evm_84532_0x423)
-
-🌍 **Sepolia**  
-[View Schema on SignScan](https://testnet-scan.sign.global/schema/onchain_evm_11155111_0x303)
-
-
-| Name                  | Type      | Description                                                                                      |
-|-----------------------|-----------|--------------------------------------------------------------------------------------------------|
-| `inviter`             | `address` | The address of the user who issued the invitation.                                              |
-| `inviterAttestationId`| `uint256` | Inviter attestation ID.                                                                          |
-| `dappsId`             | `uint256` | The identifier of the Dapp.                                                                     |
-| `sourceChain`         | `uint256` | The chain identifier where the Inviter created the invitation (used for cross-chain invitations).|
-| `targetChain`         | `uint256` | The chain identifier where the Invitee received the invitation (used for cross-chain invitations).|
