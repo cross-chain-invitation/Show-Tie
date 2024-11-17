@@ -137,9 +137,12 @@ const SelectPage = () => {
       console.log('ECDSA signature:', signature);
       toast.success('ECDSA signature generated successfully');
 
+      const contractAddress = getContractAddressByChainId(chainId.toString());
+      console.log('contractAddress:', contractAddress);
+
       const createInvitationTx = await writeContract(wagmiConfig, {
         abi: ShowtieABI,
-        address: '0xc6a3C5ce873481F0EB6Bb2b172cDD6e27e8aCff1',
+        address: contractAddress as `0x${string}`,
         functionName: 'createInvitation',
         args: [
           BigInt('10344971235874465080'),
@@ -297,10 +300,13 @@ const SelectPage = () => {
       if (res.success) {
         toast.success('Send Reward Successfully!!!');
 
+        const contractAddress = getContractAddressByChainId(inviteeChainId);
+        console.log('contractAddress:', contractAddress);
+
         // mint reward
         const transaction = await writeContract(wagmiConfig, {
           abi: ERC20ABI,
-          address: '0x7BD72b6D118F763832185744Ee054A550B6eb4cf',
+          address: contractAddress as `0x${string}`,
           functionName: 'mint',
           args: ['0xa97999f603247570fa688f40aAeAef7A90676254', BigInt(10)],
         });
@@ -327,6 +333,14 @@ const SelectPage = () => {
     return chainData ? BigInt(chainData.chainSelectorId) : undefined;
   };
 
+
+  const getContractAddressByChainId = (
+    chainId: string
+  ): string | undefined => {
+    const chainData = data.find((item) => item.chainId === parseInt(chainId));
+    console.log('chainData', chainData);
+    return chainData ? chainData.contractAddress : undefined;
+  };
 
   const handleSelect = (option: string) => {
     setSelectedOption(option);

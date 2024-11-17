@@ -2,7 +2,8 @@
   {
     "name": "Base Sepolia",
     "chainId": 84532,
-    "chainSelectorId": "10344971235874465080"
+    "chainSelectorId": "10344971235874465080",
+    "contractAddress": "0x892a7880F0Ae0Ac74A27f14aCe0cB27b9b3d041A"
   },
   {
     "name": "Linea Sepolia",
@@ -12,16 +13,19 @@
   {
     "name": "Sepolia",
     "chainId": 11155111,
-    "chainSelectorId": "16015286601757825753"
+    "chainSelectorId": "16015286601757825753",
+    "contractAddress": "0x835f7f0678FF1903D5198B82c9A2eD1F3238D606"
   },
   {
     "name": "Alfajores",
     "chainId": 44787,
-    "chainSelectorId": "3552045678561919002"
+    "chainSelectorId": "3552045678561919002",
+    "contractAddress": "0x299d63Cef8e97E4c724fba05f61919FEde607A84"
   },
   {
     "name": "Scroll Sepolia",
     "chainId": 534351,
-    "chainSelectorId": "2279865765895943307"
+    "chainSelectorId": "2279865765895943307",
+    "contractAddress": "0x299d63cef8e97e4c724fba05f61919fede607a84"
   }
 ]
