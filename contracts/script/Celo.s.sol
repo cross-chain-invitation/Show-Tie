@@ -29,6 +29,24 @@ contract DeployToCelo is Script {
     }
 }
 
+contract callSend is Script {
+    uint256 dappsId = 1;
+    address inviter = 0xf78f634e7D8322aB0Fe0C061B9629Dc5EBEc43c3;
+    bytes inviterSignature = hex"368f0ec082e46bd7d03ee618e3dfd3ac0b6c88dc03ad62aa8270d48d75ea2ee63737b000ac7bdbf9aef9987f0cf9f0ddd757976d73693cf0a66664e1869c78561b";
+    uint64 inviterAttestationId = 1;
+    uint64 sourceChainSelector = 16015286601757825753;  //Sepolia Chain Selector
+
+    function run() public {
+        vm.startBroadcast();
+
+        address baseShowtieAddress = 0x299d63Cef8e97E4c724fba05f61919FEde607A84;
+        Showtie showtie = Showtie(baseShowtieAddress);
+
+        showtie.createInvitation(16015286601757825753, 0x835f7f0678FF1903D5198B82c9A2eD1F3238D606, 1, inviterSignature);
+
+        vm.stopBroadcast();
+    }
+}
 contract callReceive is Script {
     uint256 dappsId = 1;
     address inviter = 0xf78f634e7D8322aB0Fe0C061B9629Dc5EBEc43c3;
